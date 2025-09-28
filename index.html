@@ -16,27 +16,30 @@
 
 <div class="container">
 
-  <!-- Invoice Section -->
-  <section>
-    <h2>Interior Design Cost Calculator</h2>
-    <div class="controls">
+  <section class="invoice-section">
+    <h2>Invoice Generator</h2>
+    <div class="invoice-controls">
       <table id="invoiceTable">
         <thead>
           <tr>
             <th>Sl No</th>
+            <th>Client Name</th>
+            <th>Invoice No</th>
+            <th>Date</th>
             <th>Item Name</th>
             <th>Material Used</th>
             <th>Price</th>
-            <th>Action</th>
           </tr>
         </thead>
         <tbody id="invoiceBody">
           <tr>
             <td>1</td>
+            <td><input type="text" value=""/></td>
+            <td><input type="text" value="INV001"/></td>
+            <td><input type="date" value=""/></td>
             <td><input type="text" value="TV Unit" /></td>
             <td><input type="text" value="Plywood" /></td>
             <td><input type="number" value="10000" class="price" /></td>
-            <td><button onclick="deleteRow(this)">Delete</button></td>
           </tr>
         </tbody>
       </table>
@@ -44,14 +47,20 @@
       <button onclick="previewInvoice()">Preview Invoice</button>
       <button onclick="downloadPDF()">Download PDF Invoice</button>
       <input type="file" accept=".json" onchange="loadInvoice(this)" />
+      <button onclick="downloadInvoiceJSON()">Download Invoice JSON</button>
+    </div>
+
+    <div id="totals">
+      <p><strong>Total: ₹<span id="totalAmount">0</span></strong></p>
+      <p><strong>GST (18%): ₹<span id="gstAmount">0</span></strong></p>
+      <p><strong>Final Total: ₹<span id="finalAmount">0</span></strong></p>
     </div>
   </section>
 
-  <!-- 2D to 3D Section -->
-  <section>
-    <h2>Upload 2D Floor Plan and Generate 3D Walls</h2>
+  <section class="design-section">
+    <h2>2D Floor Plan to 3D Walls</h2>
     <input type="file" id="imageUpload" accept="image/*" />
-    <button onclick="processImageUpload()">Generate 3D Design</button>
+    <button onclick="generate3D()">Generate 3D Design</button>
     <canvas id="inputCanvas" style="display:none;"></canvas>
     <canvas id="threeCanvas"></canvas>
   </section>
@@ -59,8 +68,12 @@
 </div>
 
 <footer>
-  <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
-  <div>Phone: +91 9916511599 & +91 8553608981</div>
+  <div class="footer-left">
+    Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106
+  </div>
+  <div class="footer-right">
+    Phone: +91 9916511599 & +91 8553608981
+  </div>
 </footer>
 
 <script src="script.js"></script>
