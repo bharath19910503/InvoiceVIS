@@ -3,68 +3,60 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Insert</title>
+    <title>Invoice Insert - Varshith Interior Solution</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <header>
-            <h1>Varshith Interior Solution</h1>
-        </header>
+    <header>
+        <img src="logo.png" alt="Company Logo" class="logo">
+        <h1>Varshith Interior Solution</h1>
+    </header>
 
+    <main>
         <section class="invoice-details">
             <h2>Invoice Details</h2>
-            <div class="details-form">
-                <label>Client Name: <input type="text" id="clientName"></label>
-                <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
-                <label>Date: <input type="date" id="invoiceDate"></label>
+            <div class="fields">
+                <input type="text" id="clientName" placeholder="Client Name">
+                <input type="text" id="invoiceNumber" placeholder="Invoice Number">
+                <input type="date" id="invoiceDate" placeholder="Invoice Date">
             </div>
         </section>
 
-        <section class="items-section">
-            <h2>Items</h2>
-            <table id="itemsTable">
+        <section class="invoice-actions">
+            <button id="addItemBtn">Add Item</button>
+            <button id="uploadInvoiceBtn">Upload Invoice</button>
+            <input type="file" id="uploadInvoiceInput" accept=".json" style="display:none;">
+            <button id="generate3DBtn">Generate 3D Design</button>
+            <button id="previewPdfBtn">Preview PDF</button>
+            <button id="downloadPdfBtn">Download PDF</button>
+        </section>
+
+        <section class="invoice-table">
+            <table id="invoiceTable">
                 <thead>
                     <tr>
-                        <th>Item</th>
+                        <th>Item Description</th>
                         <th>Quantity</th>
-                        <th>Rate</th>
-                        <th>Amount</th>
+                        <th>Price</th>
                     </tr>
                 </thead>
                 <tbody>
                 </tbody>
             </table>
-            <button id="addItemBtn">Add Item</button>
         </section>
 
         <section class="totals">
-            <p>Total Amount: <span id="totalAmount">0</span></p>
-            <p>GST (18%): <span id="gstAmount">0</span></p>
-            <p>Final Amount: <span id="finalAmount">0</span></p>
+            <div>Total Cost: <span id="totalCost">0.00</span></div>
+            <div>GST: <span id="gst">0.00</span></div>
+            <div>Final Cost: <span id="finalCost">0.00</span></div>
         </section>
+    </main>
 
-        <section class="actions">
-            <input type="file" id="uploadInvoice" accept=".json">
-            <button id="generatePDF">Download PDF</button>
-            <button id="previewPDF">Preview PDF</button>
-        </section>
+    <footer>
+        <div class="address">Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
+        <div class="contact">Phone: +91 9916511599 & +91 8553608981</div>
+    </footer>
 
-        <section class="design-2d">
-            <h2>2D Design</h2>
-            <canvas id="design2D" width="400" height="300" style="border:1px solid #ccc;"></canvas>
-            <button id="generate3D">Generate 3D Design</button>
-        </section>
-
-        <section class="design-3d">
-            <h2>3D Design</h2>
-            <div id="design3D" style="width:400px; height:300px; border:1px solid #ccc;"></div>
-        </section>
-    </div>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>

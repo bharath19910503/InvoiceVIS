@@ -1,61 +1,91 @@
 body {
     font-family: Arial, sans-serif;
-    background: #f2f2f2;
     margin: 0;
-    padding: 0;
+    background-color: #f7f7f7;
+    color: #333;
 }
-.container {
-    width: 90%;
-    max-width: 1000px;
-    margin: auto;
-    background: #fff;
+
+header {
+    background-color: #2c3e50;
+    color: white;
     padding: 20px;
-    box-shadow: 0 0 10px rgba(0,0,0,0.1);
-}
-header h1 {
     text-align: center;
-    color: #004080;
+    position: relative;
 }
-.invoice-details, .items-section, .totals, .actions, .design-2d, .design-3d {
+
+header .logo {
+    height: 60px;
+    position: absolute;
+    left: 20px;
+    top: 10px;
+}
+
+main {
+    padding: 20px;
+}
+
+.invoice-details {
+    background-color: #ecf0f1;
+    padding: 15px;
+    border-radius: 5px;
     margin-bottom: 20px;
 }
-.details-form label {
-    display: inline-block;
-    margin-right: 20px;
-    font-weight: bold;
+
+.invoice-details .fields input {
+    padding: 10px;
+    margin-right: 10px;
+    margin-bottom: 10px;
+    width: 200px;
 }
-input[type="text"], input[type="date"] {
-    padding: 5px;
-    margin-left: 5px;
+
+.invoice-actions {
+    margin-bottom: 20px;
 }
-table {
+
+.invoice-actions button {
+    padding: 10px 15px;
+    margin-right: 10px;
+    background-color: #3498db;
+    color: white;
+    border: none;
+    border-radius: 4px;
+    cursor: pointer;
+}
+
+.invoice-actions button:hover {
+    background-color: #2980b9;
+}
+
+.invoice-table table {
     width: 100%;
     border-collapse: collapse;
-    margin-top: 10px;
+    background-color: white;
 }
-table, th, td {
-    border: 1px solid #ccc;
-}
-th, td {
+
+.invoice-table th, .invoice-table td {
     padding: 10px;
+    border: 1px solid #bdc3c7;
     text-align: left;
 }
-th {
-    background: #004080;
-    color: #fff;
+
+.invoice-table tbody tr:nth-child(even) {
+    background-color: #f2f2f2;
 }
-button {
-    padding: 10px 15px;
-    background: #004080;
-    color: #fff;
-    border: none;
-    cursor: pointer;
-    margin-top: 10px;
-}
-button:hover {
-    background: #0066cc;
-}
-.totals p {
+
+.totals {
+    margin-top: 20px;
     font-weight: bold;
-    margin: 5px 0;
+}
+
+.totals div {
+    margin-bottom: 5px;
+}
+
+footer {
+    background-color: #2c3e50;
+    color: white;
+    padding: 15px;
+    text-align: left;
+    display: flex;
+    justify-content: space-between;
 }
