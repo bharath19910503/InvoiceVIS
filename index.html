@@ -1,63 +1,63 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8" />
-  <title>Invoice Insert - Varshith Interior Solution</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-  <link rel="stylesheet" href="style.css" />
+    <meta charset="UTF-8">
+    <title>Invoice Insert</title>
+    <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/html2canvas/1.4.1/html2canvas.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/controls/OrbitControls.js"></script>
 </head>
 <body>
+    <div class="container">
+        <h1>Invoice Insert</h1>
 
-<header>
-  <h1>Invoice Insert - Varshith Interior Solution</h1>
-</header>
+        <div class="invoice-info">
+            <label>Client Name:</label>
+            <input type="text" id="clientName">
+            <label>Invoice Number:</label>
+            <input type="text" id="invoiceNumber">
+            <label>Date:</label>
+            <input type="date" id="invoiceDate">
+        </div>
 
-<div class="container">
+        <table id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Description</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                    <th>Total</th>
+                    <th>Action</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button onclick="addItem()">Add Item</button>
 
-  <section>
-    <h2>Client & Invoice Details</h2>
-    <div class="invoice-details">
-      <label>Client Name: <input type="text" id="clientName" placeholder="Enter client name" /></label>
-      <label>Invoice Number: <input type="text" id="invoiceNumber" placeholder="Enter invoice number" /></label>
-      <label>Date: <input type="date" id="invoiceDate" /></label>
+        <div class="totals">
+            <p>Total: <span id="totalAmount">0</span></p>
+            <p>GST (18%): <span id="gstAmount">0</span></p>
+            <p>Final Amount: <span id="finalAmount">0</span></p>
+        </div>
+
+        <div class="buttons">
+            <input type="file" id="invoiceUpload" accept=".json,.txt">
+            <button onclick="uploadInvoice()">Upload Invoice</button>
+            <button onclick="previewInvoice()">Preview Invoice</button>
+            <button onclick="downloadInvoice()">Download PDF</button>
+        </div>
+
+        <h2>2D → 3D Design Generator</h2>
+        <input type="file" id="design2D" accept="image/*">
+        <button onclick="generate3D()">Generate 3D Design</button>
+        <div id="designPreview" style="width:500px; height:400px; border:1px solid #ccc; margin-top:10px;"></div>
+
+        <div id="invoicePreview" style="display:none;"></div>
     </div>
-  </section>
 
-  <section>
-    <h2>Invoice Items</h2>
-    <div class="controls">
-      <table id="invoiceTable">
-        <thead>
-          <tr>
-            <th>Sl No</th>
-            <th>Item Name</th>
-            <th>Material Used</th>
-            <th>Price (₹)</th>
-            <th>Action</th>
-          </tr>
-        </thead>
-        <tbody id="invoiceBody"></tbody>
-      </table>
-      <button onclick="addRow()">Add Item</button>
-      <button onclick="downloadPDF()">Download PDF Invoice</button>
-      <button onclick="editInvoice()">Edit Invoice</button>
-      <input type="file" accept=".json" onchange="loadInvoice(this)" />
-    </div>
-
-    <div id="totals">
-      <p><strong>Total:</strong> ₹<span id="totalAmount">0</span></p>
-      <p><strong>GST (18%):</strong> ₹<span id="gstAmount">0</span></p>
-      <p><strong>Final Total:</strong> ₹<span id="finalAmount">0</span></p>
-    </div>
-  </section>
-
-</div>
-
-<footer>
-  <div>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
-  <div>Phone: +91 9916511599 & +91 8553608981</div>
-</footer>
-
-<script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>

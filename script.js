@@ -1,118 +1,160 @@
-// ----------------- Invoice Functions -----------------
-function addRow(item = {}) {
-  const tbody = document.getElementById("invoiceBody");
-  const rowCount = tbody.rows.length + 1;
-  const row = tbody.insertRow();
-  row.innerHTML = `
-    <td>${rowCount}</td>
-    <td><input type="text" value="${item.name || ''}"></td>
-    <td><input type="text" value="${item.material || ''}"></td>
-    <td><input type="number" class="price" value="${item.price || 0}"></td>
-    <td><button onclick="deleteRow(this)">Delete</button></td>
-  `;
-  calculateTotal();
+let items = [];
+
+function addItem(name='', desc='', qty=1, price=0) {
+    items.push({name, desc, qty, price});
+    renderTable();
 }
 
-function deleteRow(btn) {
-  const row = btn.parentNode.parentNode;
-  row.parentNode.removeChild(row);
-  updateSlNo();
-  calculateTotal();
+function renderTable() {
+    const tbody = document.querySelector('#invoiceTable tbody');
+    tbody.innerHTML = '';
+    items.forEach((item, index) => {
+        const row = document.createElement('tr');
+        row.innerHTML = `
+            <td><input value="${item.name}" onchange="updateItem(${index}, 'name', this.value)"></td>
+            <td><input value="${item.desc}" onchange="updateItem(${index}, 'desc', this.value)"></td>
+            <td><input type="number" value="${item.qty}" onchange="updateItem(${index}, 'qty', this.value)"></td>
+            <td><input type="number" value="${item.price}" onchange="updateItem(${index}, 'price', this.value)"></td>
+            <td>${(item.qty * item.price).toFixed(2)}</td>
+            <td><button onclick="deleteItem(${index})">Delete</button></td>
+        `;
+        tbody.appendChild(row);
+    });
+    updateTotals();
 }
 
-function updateSlNo() {
-  const rows = document.querySelectorAll("#invoiceBody tr");
-  rows.forEach((row, index) => {
-    row.cells[0].textContent = index + 1;
-  });
+function updateItem(index, key, value) {
+    items[index][key] = key === 'qty' || key === 'price' ? parseFloat(value) : value;
+    renderTable();
 }
 
-function calculateTotal() {
-  let total = 0;
-  document.querySelectorAll(".price").forEach(input => {
-    total += parseFloat(input.value) || 0;
-  });
-  const gst = total * 0.18;
-  const final = total + gst;
-
-  document.getElementById("totalAmount").textContent = total.toFixed(2);
-  document.getElementById("gstAmount").textContent = gst.toFixed(2);
-  document.getElementById("finalAmount").textContent = final.toFixed(2);
+function deleteItem(index) {
+    items.splice(index,1);
+    renderTable();
 }
 
-document.addEventListener("input", calculateTotal);
-
-// ----------------- Invoice Upload & Edit -----------------
-function loadInvoice(input) {
-  const reader = new FileReader();
-  reader.onload = function(e) {
-    const data = JSON.parse(e.target.result);
-    document.getElementById("clientName").value = data.clientName || '';
-    document.getElementById("invoiceNumber").value = data.invoiceNumber || '';
-    document.getElementById("invoiceDate").value = data.date || '';
-    const tbody = document.getElementById("invoiceBody");
-    tbody.innerHTML = "";
-    data.items.forEach(item => addRow(item));
-  };
-  reader.readAsText(input.files[0]);
+function updateTotals() {
+    let total = items.reduce((sum, i)=> sum + i.qty*i.price,0);
+    let gst = total*0.18;
+    let finalAmount = total+gst;
+    document.getElementById('totalAmount').innerText = total.toFixed(2);
+    document.getElementById('gstAmount').innerText = gst.toFixed(2);
+    document.getElementById('finalAmount').innerText = finalAmount.toFixed(2);
 }
 
-function editInvoice() {
-  const data = {
-    clientName: document.getElementById("clientName").value,
-    invoiceNumber: document.getElementById("invoiceNumber").value,
-    date: document.getElementById("invoiceDate").value,
-    items: Array.from(document.querySelectorAll("#invoiceBody tr")).map(row => ({
-      name: row.cells[1].firstChild.value,
-      material: row.cells[2].firstChild.value,
-      price: row.cells[3].firstChild.value
-    }))
-  };
-  const blob = new Blob([JSON.stringify(data, null, 2)], {type : 'application/json'});
-  const url = URL.createObjectURL(blob);
-  const a = document.createElement('a');
-  a.href = url;
-  a.download = `Invoice_${data.invoiceNumber || 'edited'}.json`;
-  a.click();
-  URL.revokeObjectURL(url);
+// Upload existing invoice
+function uploadInvoice() {
+    const file = document.getElementById('invoiceUpload').files[0];
+    if(!file) return alert('Select a file!');
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const data = JSON.parse(e.target.result);
+        document.getElementById('clientName').value = data.clientName || '';
+        document.getElementById('invoiceNumber').value = data.invoiceNumber || '';
+        document.getElementById('invoiceDate').value = data.invoiceDate || '';
+        items = data.items || [];
+        renderTable();
+    }
+    reader.readAsText(file);
 }
 
-// ----------------- PDF Download -----------------
-async function downloadPDF() {
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+// Preview Invoice
+function previewInvoice() {
+    const preview = document.getElementById('invoicePreview');
+    preview.innerHTML = generateInvoiceHTML();
+    preview.style.display = 'block';
+}
 
-  doc.setFontSize(18);
-  doc.text("Varshith Interior Solution", 105, 20, { align: "center" });
+// Download PDF
+function downloadInvoice() {
+    const invoiceHTML = generateInvoiceHTML();
+    const doc = new jspdf.jsPDF();
+    html2canvas(document.createElement('div')).then(()=>{}); // optional
+    doc.html(invoiceHTML, {
+        callback: function (doc) {
+            doc.save(`Invoice_${document.getElementById('invoiceNumber').value || Date.now()}.pdf`);
+        },
+        x: 10,
+        y: 10,
+        html2canvas: { scale: 0.5 }
+    });
+}
 
-  doc.setFontSize(12);
-  doc.text(`Client Name: ${document.getElementById("clientName").value}`, 14, 35);
-  doc.text(`Invoice No: ${document.getElementById("invoiceNumber").value}`, 14, 42);
-  doc.text(`Date: ${document.getElementById("invoiceDate").value}`, 14, 49);
+// Generate Invoice HTML
+function generateInvoiceHTML() {
+    let html = `
+        <div style="text-align:center; font-family: Arial;">
+            <h1>Varshith Interior Solution</h1>
+            <p>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</p>
+            <p>Phone: +91 9916511599 & +91 8553608981</p>
+            <hr/>
+            <p>Client Name: ${document.getElementById('clientName').value}</p>
+            <p>Invoice Number: ${document.getElementById('invoiceNumber').value}</p>
+            <p>Date: ${document.getElementById('invoiceDate').value}</p>
+            <table border="1" style="width:100%; border-collapse: collapse;">
+                <tr style="background-color:#3498db; color:white;">
+                    <th>Item</th><th>Description</th><th>Qty</th><th>Price</th><th>Total</th>
+                </tr>
+    `;
+    items.forEach(item=>{
+        html+=`<tr>
+            <td>${item.name}</td>
+            <td>${item.desc}</td>
+            <td>${item.qty}</td>
+            <td>${item.price.toFixed(2)}</td>
+            <td>${(item.qty*item.price).toFixed(2)}</td>
+        </tr>`;
+    });
+    html+=`</table>
+        <p>Total: ${document.getElementById('totalAmount').innerText}</p>
+        <p>GST: ${document.getElementById('gstAmount').innerText}</p>
+        <p>Final Amount: ${document.getElementById('finalAmount').innerText}</p>
+    </div>`;
+    return html;
+}
 
-  // Table
-  const rows = Array.from(document.querySelectorAll("#invoiceBody tr")).map((row, index) => [
-    index + 1,
-    row.cells[1].firstChild.value,
-    row.cells[2].firstChild.value,
-    row.cells[3].firstChild.value
-  ]);
+// 2D → 3D Design Generator
+function generate3D() {
+    const file = document.getElementById('design2D').files[0];
+    if(!file){ alert('Upload a 2D Design image first'); return; }
+    const reader = new FileReader();
+    reader.onload = function(e){
+        const url = e.target.result;
+        const container = document.getElementById('designPreview');
+        container.innerHTML = '';
 
-  doc.autoTable({
-    startY: 55,
-    head: [['Sl No', 'Item Name', 'Material', 'Price (₹)']],
-    body: rows,
-  });
+        const scene = new THREE.Scene();
+        scene.background = new THREE.Color(0xf0f0f0);
 
-  const totalsY = doc.lastAutoTable.finalY + 10;
-  doc.text(`Total: ₹${document.getElementById("totalAmount").textContent}`, 14, totalsY);
-  doc.text(`GST (18%): ₹${document.getElementById("gstAmount").textContent}`, 14, totalsY + 7);
-  doc.text(`Final Total: ₹${document.getElementById("finalAmount").textContent}`, 14, totalsY + 14);
+        const camera = new THREE.PerspectiveCamera(45, container.clientWidth/container.clientHeight, 0.1, 1000);
+        camera.position.z = 5;
 
-  // Footer
-  doc.setFontSize(10);
-  doc.text("Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106", 14, 280);
-  doc.text("Phone: +91 9916511599 & +91 8553608981", 14, 287);
+        const renderer = new THREE.WebGLRenderer({antialias:true});
+        renderer.setSize(container.clientWidth, container.clientHeight);
+        container.appendChild(renderer.domElement);
 
-  doc.save(`Invoice_${document.getElementById("invoiceNumber").value}.pdf`);
+        const controls = new THREE.OrbitControls(camera, renderer.domElement);
+        controls.enableDamping = true;
+
+        const light = new THREE.DirectionalLight(0xffffff,1);
+        light.position.set(5,5,5).normalize();
+        scene.add(light);
+        scene.add(new THREE.AmbientLight(0x404040));
+
+        const textureLoader = new THREE.TextureLoader();
+        textureLoader.load(url, function(texture){
+            const geometry = new THREE.PlaneGeometry(4,3);
+            const material = new THREE.MeshStandardMaterial({map:texture});
+            const plane = new THREE.Mesh(geometry, material);
+            scene.add(plane);
+            animate();
+        });
+
+        function animate() {
+            requestAnimationFrame(animate);
+            controls.update();
+            renderer.render(scene,camera);
+        }
+    }
+    reader.readAsDataURL(file);
 }
