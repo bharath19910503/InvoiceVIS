@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Varshith Interior Solutions — Invoice & 3D Designer</title>
+  <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
 
   <link rel="stylesheet" href="style.css">
 
@@ -19,14 +19,18 @@
   <header>
     <div class="header-left">
       <img id="logoImg" src="" alt="Logo (upload below)" />
-      <label class="btn">Upload Logo
-        <input id="logoUpload" type="file" accept="image/*">
-      </label>
+      <div class="logo-upload">
+        <label class="btn">Upload Logo
+          <input id="logoUpload" type="file" accept="image/*">
+        </label>
+      </div>
     </div>
+
     <div class="header-center">
       <h1>Varshith Interior Solutions</h1>
       <div class="company-sub">NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106</div>
     </div>
+
     <div class="header-right">
       <div>Phone: +91 9916511599</div>
       <div>Phone: +91 8553608981</div>
@@ -37,6 +41,7 @@
   <main>
     <section class="left-col">
       <h2>Invoice</h2>
+
       <div class="invoice-meta">
         <input id="clientName" placeholder="Client Name">
         <input id="invoiceNumber" placeholder="Invoice Number">
@@ -73,19 +78,28 @@
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
+        <button id="exportJsonBtn">Export Invoice (JSON)</button>
+        <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
+        <button id="importJsonBtn">Import Invoice (JSON)</button>
       </div>
     </section>
 
     <section class="right-col">
       <h2>2D → 3D Designer</h2>
-      <input id="upload2D" type="file" accept="image/*" multiple>
-      <div class="hint">Select multiple 2D images; edit name and generate 3D snapshot for each.</div>
+
+      <div class="uploader">
+        <input id="upload2D" type="file" accept="image/*" multiple>
+        <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
+      </div>
+
       <div id="designList" class="design-list"></div>
 
       <div id="progressContainer" class="progress-container" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
       </div>
+
       <div id="preview3D" class="preview-3d"></div>
+      <div class="preview-note">Click "Generate 3D" for any design to preview and capture a snapshot (embedded into PDF).</div>
     </section>
   </main>
 
