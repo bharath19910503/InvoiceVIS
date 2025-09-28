@@ -12,32 +12,49 @@
     <img src="logo.png" alt="Logo">
     <div>
       <h1>Company Name</h1>
-      <div class="company-sub">3D Design & Modeling</div>
+      <div class="company-sub">Your Company Tagline</div>
     </div>
   </div>
 </header>
 
 <main>
   <div class="left-col">
+    <div class="invoice-meta">
+      <input type="text" id="clientName" placeholder="Client Name">
+      <input type="text" id="invoiceNo" placeholder="Invoice No">
+      <input type="date" id="invoiceDate">
+    </div>
+
     <div class="controls">
-      <input type="text" id="designName" placeholder="Enter Design Name">
-      <input type="number" id="designAmount" placeholder="Enter Amount">
-      <button id="addDesignBtn">Add Design</button>
+      <label class="btn">Add 2D → 3D Designer File
+        <input type="file" id="addDesign" multiple>
+      </label>
     </div>
 
     <div class="design-list" id="designList"></div>
 
-    <div id="note">
-      50% of the quoted amount has to be paid as advance, 30% after completing 50% of work and remaining 20% on completion.
+    <div class="summary">
+      <div>Quoted Amount (₹): <input type="number" id="quotedAmount" value="0"></div>
+      <div class="final">Total Amount (₹): <span id="totalAmount">0</span></div>
     </div>
 
+    <textarea id="note" placeholder="50% of the quoted amount has to be paid as advance, 30% after completing 50% of work and remaining 20% on completion."></textarea>
+
     <div class="actions">
-      <button id="generatePDFBtn" class="primary">Generate PDF</button>
+      <button class="primary" id="generatePDF">Generate PDF</button>
     </div>
+  </div>
+
+  <div class="right-col">
+    <div class="preview-3d" id="preview3D">3D Preview will appear here</div>
+    <div class="preview-note" id="previewNote"></div>
   </div>
 </main>
 
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<footer>
+  &copy; 2025 Company Name. All rights reserved.
+</footer>
+
 <script src="script.js"></script>
 </body>
 </html>

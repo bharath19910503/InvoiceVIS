@@ -1,77 +1,82 @@
+const designList = document.getElementById('designList');
+const addDesign = document.getElementById('addDesign');
+const quotedAmount = document.getElementById('quotedAmount');
+const totalAmount = document.getElementById('totalAmount');
+const note = document.getElementById('note');
+const previewNote = document.getElementById('previewNote');
+const generatePDF = document.getElementById('generatePDF');
+
 let designs = [];
 
-const designList = document.getElementById("designList");
-const addDesignBtn = document.getElementById("addDesignBtn");
-const designNameInput = document.getElementById("designName");
-const designAmountInput = document.getElementById("designAmount");
-
-// Add Design
-addDesignBtn.addEventListener("click", () => {
-  const name = designNameInput.value.trim();
-  const amount = parseFloat(designAmountInput.value);
-
-  if (!name || isNaN(amount)) return alert("Enter valid name and amount");
-
-  designs.push({ name, amount });
-  renderDesigns();
-
-  designNameInput.value = "";
-  designAmountInput.value = "";
+addDesign.addEventListener('change', (e) => {
+  Array.from(e.target.files).forEach(file => {
+    const reader = new FileReader();
+    reader.onload = function(ev){
+      const design = {name:file.name, src:ev.target.result};
+      designs.push(design);
+      renderDesigns();
+    };
+    reader.readAsDataURL(file);
+  });
+  addDesign.value = '';
 });
 
-// Render Design List
-function renderDesigns() {
-  designList.innerHTML = "";
-  designs.forEach((d, i) => {
-    const div = document.createElement("div");
-    div.className = "design-item";
+function renderDesigns(){
+  designList.innerHTML = '';
+  designs.forEach((d, idx)=>{
+    const div = document.createElement('div');
+    div.className = 'design-item';
     div.innerHTML = `
-      <span>${d.name} - ₹${d.amount.toLocaleString('en-IN')}</span>
-      <button class="deleteBtn" onclick="deleteDesign(${i})">Delete</button>
+      <img src="${d.src}" class="design-thumb">
+      <div class="design-info">${d.name}</div>
+      <div class="design-controls">
+        <button onclick="removeDesign(${idx})">Delete</button>
+      </div>
     `;
     designList.appendChild(div);
   });
 }
 
-// Delete Design
-function deleteDesign(index) {
-  designs.splice(index, 1);
+function removeDesign(index){
+  designs.splice(index,1);
   renderDesigns();
 }
 
-// Format number in Indian Rupees
-function formatINR(amount) {
-  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
-}
+quotedAmount.addEventListener('input', ()=>{
+  totalAmount.textContent = Number(quotedAmount.value || 0).toLocaleString('en-IN', {style:'currency', currency:'INR'});
+});
 
-// Generate PDF
-document.getElementById("generatePDFBtn").addEventListener("click", () => {
-  if (!designs.length) return alert("Add at least one design");
+note.addEventListener('input', ()=>{
+  previewNote.textContent = note.value;
+});
 
-  const { jsPDF } = window.jspdf;
-  const doc = new jsPDF();
+// PDF Generation
+generatePDF.addEventListener('click', ()=>{
+  const invoiceData = {
+    client: document.getElementById('clientName').value,
+    invoiceNo: document.getElementById('invoiceNo').value,
+    date: document.getElementById('invoiceDate').value,
+    designs: designs,
+    amount: quotedAmount.value,
+    note: note.value
+  };
 
-  doc.setFontSize(16);
-  doc.text("Invoice", 14, 20);
-
-  doc.setFontSize(12);
-  let yPos = 30;
-
-  designs.forEach((d, i) => {
-    doc.text(`${i + 1}. ${d.name} - ${formatINR(d.amount)}`, 14, yPos);
-    yPos += 8;
-
-    const advance = d.amount * 0.5;
-    const mid = d.amount * 0.3;
-    const final = d.amount * 0.2;
-
-    doc.text(`   - 50% Advance: ${formatINR(advance)}`, 18, yPos);
-    yPos += 6;
-    doc.text(`   - 30% After 50% Completion: ${formatINR(mid)}`, 18, yPos);
-    yPos += 6;
-    doc.text(`   - 20% On Completion: ${formatINR(final)}`, 18, yPos);
-    yPos += 10;
+  const pdfWindow = window.open('', '_blank');
+  let designsHtml = '';
+  invoiceData.designs.forEach(d=>{
+    designsHtml += `<div><img src="${d.src}" style="width:80px;height:60px;border:1px solid #000;margin-right:5px;"> ${d.name}</div>`;
   });
 
-  doc.save("invoice.pdf");
+  pdfWindow.document.write(`
+    <h1>Invoice: ${invoiceData.invoiceNo}</h1>
+    <p>Date: ${invoiceData.date}</p>
+    <p>Client: ${invoiceData.client}</p>
+    <hr>
+    <h3>Design Files:</h3>
+    ${designsHtml}
+    <hr>
+    <p>Quoted Amount: ₹${invoiceData.amount}</p>
+    <p>${invoiceData.note}</p>
+  `);
+  pdfWindow.print();
 });
