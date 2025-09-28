@@ -3,8 +3,6 @@
 <head>
   <meta charset="UTF-8" />
   <title>Invoice Insert - Varshith Interior Solution</title>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
-  <script async src="https://docs.opencv.org/4.x/opencv.js" type="text/javascript"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
   <link rel="stylesheet" href="style.css" />
 </head>
@@ -38,19 +36,11 @@
             <th>Action</th>
           </tr>
         </thead>
-        <tbody id="invoiceBody">
-          <tr>
-            <td>1</td>
-            <td><input type="text" value="TV Unit" /></td>
-            <td><input type="text" value="Plywood" /></td>
-            <td><input type="number" value="10000" class="price" /></td>
-            <td><button onclick="deleteRow(this)">Delete</button></td>
-          </tr>
-        </tbody>
+        <tbody id="invoiceBody"></tbody>
       </table>
       <button onclick="addRow()">Add Item</button>
-      <button onclick="previewInvoice()">Preview Invoice</button>
       <button onclick="downloadPDF()">Download PDF Invoice</button>
+      <button onclick="editInvoice()">Edit Invoice</button>
       <input type="file" accept=".json" onchange="loadInvoice(this)" />
     </div>
 
@@ -59,14 +49,6 @@
       <p><strong>GST (18%):</strong> ₹<span id="gstAmount">0</span></p>
       <p><strong>Final Total:</strong> ₹<span id="finalAmount">0</span></p>
     </div>
-  </section>
-
-  <section>
-    <h2>Upload 2D Floor Plan and Generate 3D Design</h2>
-    <input type="file" id="imageUpload" accept="image/*" />
-    <button onclick="generate3D()">Generate 3D Design</button>
-    <canvas id="inputCanvas" style="display:none;"></canvas>
-    <canvas id="threeCanvas"></canvas>
   </section>
 
 </div>
