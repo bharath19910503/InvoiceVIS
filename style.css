@@ -1,91 +1,81 @@
 body {
-    font-family: Arial, sans-serif;
-    margin: 0;
-    background-color: #f7f7f7;
-    color: #333;
+  font-family: Arial, sans-serif;
+  background-color: #f5f5f5;
+  margin: 0;
+  padding: 0;
 }
 
 header {
-    background-color: #2c3e50;
-    color: white;
-    padding: 20px;
-    text-align: center;
-    position: relative;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  background-color: #1a73e8;
+  color: white;
+  padding: 20px;
 }
 
 header .logo {
-    height: 60px;
-    position: absolute;
-    left: 20px;
-    top: 10px;
+  height: 50px;
+  margin-right: 20px;
 }
 
-main {
-    padding: 20px;
+.invoice-details, .invoice-table-section, .totals, .actions {
+  background: white;
+  margin: 20px auto;
+  padding: 20px;
+  border-radius: 10px;
+  width: 90%;
+  max-width: 900px;
+  box-shadow: 0 0 10px rgba(0,0,0,0.1);
 }
 
-.invoice-details {
-    background-color: #ecf0f1;
-    padding: 15px;
-    border-radius: 5px;
-    margin-bottom: 20px;
+.details-grid {
+  display: flex;
+  justify-content: space-between;
+  flex-wrap: wrap;
 }
 
-.invoice-details .fields input {
-    padding: 10px;
-    margin-right: 10px;
-    margin-bottom: 10px;
-    width: 200px;
+.details-grid label {
+  flex: 1 1 30%;
+  margin: 10px 0;
 }
 
-.invoice-actions {
-    margin-bottom: 20px;
+.invoice-table-section table {
+  width: 100%;
+  border-collapse: collapse;
+  margin-bottom: 10px;
 }
 
-.invoice-actions button {
-    padding: 10px 15px;
-    margin-right: 10px;
-    background-color: #3498db;
-    color: white;
-    border: none;
-    border-radius: 4px;
-    cursor: pointer;
+.invoice-table-section th, .invoice-table-section td {
+  border: 1px solid #ccc;
+  padding: 10px;
+  text-align: center;
 }
 
-.invoice-actions button:hover {
-    background-color: #2980b9;
+button {
+  background-color: #1a73e8;
+  color: white;
+  border: none;
+  padding: 10px 20px;
+  margin: 5px;
+  cursor: pointer;
+  border-radius: 5px;
 }
 
-.invoice-table table {
-    width: 100%;
-    border-collapse: collapse;
-    background-color: white;
+button:hover {
+  background-color: #1558b0;
 }
 
-.invoice-table th, .invoice-table td {
-    padding: 10px;
-    border: 1px solid #bdc3c7;
-    text-align: left;
+.totals p {
+  font-weight: bold;
+  font-size: 16px;
 }
 
-.invoice-table tbody tr:nth-child(even) {
-    background-color: #f2f2f2;
-}
-
-.totals {
-    margin-top: 20px;
-    font-weight: bold;
-}
-
-.totals div {
-    margin-bottom: 5px;
-}
-
-footer {
-    background-color: #2c3e50;
-    color: white;
-    padding: 15px;
-    text-align: left;
-    display: flex;
-    justify-content: space-between;
+.pdf-preview {
+  border: 1px solid #ccc;
+  padding: 10px;
+  margin: 20px auto;
+  max-width: 900px;
+  min-height: 400px;
+  background: white;
 }

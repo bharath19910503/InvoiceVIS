@@ -1,62 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Insert - Varshith Interior Solution</title>
-    <link rel="stylesheet" href="style.css">
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Invoice Insert - Varshith Interior Solution</title>
+  <link rel="stylesheet" href="style.css">
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
-    <header>
-        <img src="logo.png" alt="Company Logo" class="logo">
-        <h1>Varshith Interior Solution</h1>
-    </header>
+  <header>
+    <img src="logo.png" alt="Varshith Logo" class="logo">
+    <h1>Varshith Interior Solution</h1>
+  </header>
 
-    <main>
-        <section class="invoice-details">
-            <h2>Invoice Details</h2>
-            <div class="fields">
-                <input type="text" id="clientName" placeholder="Client Name">
-                <input type="text" id="invoiceNumber" placeholder="Invoice Number">
-                <input type="date" id="invoiceDate" placeholder="Invoice Date">
-            </div>
-        </section>
+  <section class="invoice-details">
+    <h2>Invoice Details</h2>
+    <div class="details-grid">
+      <label>Client Name:<input type="text" id="clientName"></label>
+      <label>Invoice Number:<input type="text" id="invoiceNumber"></label>
+      <label>Date:<input type="date" id="invoiceDate"></label>
+    </div>
+  </section>
 
-        <section class="invoice-actions">
-            <button id="addItemBtn">Add Item</button>
-            <button id="uploadInvoiceBtn">Upload Invoice</button>
-            <input type="file" id="uploadInvoiceInput" accept=".json" style="display:none;">
-            <button id="generate3DBtn">Generate 3D Design</button>
-            <button id="previewPdfBtn">Preview PDF</button>
-            <button id="downloadPdfBtn">Download PDF</button>
-        </section>
+  <section class="invoice-table-section">
+    <table id="invoiceTable">
+      <thead>
+        <tr>
+          <th>Description</th>
+          <th>Quantity</th>
+          <th>Rate</th>
+          <th>Cost</th>
+        </tr>
+      </thead>
+      <tbody></tbody>
+    </table>
+    <button id="addItemBtn">Add Item</button>
+  </section>
 
-        <section class="invoice-table">
-            <table id="invoiceTable">
-                <thead>
-                    <tr>
-                        <th>Item Description</th>
-                        <th>Quantity</th>
-                        <th>Price</th>
-                    </tr>
-                </thead>
-                <tbody>
-                </tbody>
-            </table>
-        </section>
+  <section class="totals">
+    <p>Total Cost: <span id="totalCost">0</span></p>
+    <p>GST (18%): <span id="gst">0</span></p>
+    <p>Final Cost: <span id="finalCost">0</span></p>
+  </section>
 
-        <section class="totals">
-            <div>Total Cost: <span id="totalCost">0.00</span></div>
-            <div>GST: <span id="gst">0.00</span></div>
-            <div>Final Cost: <span id="finalCost">0.00</span></div>
-        </section>
-    </main>
+  <section class="actions">
+    <input type="file" id="uploadInvoice" accept=".json">
+    <input type="file" id="upload2DDesign" accept="image/*">
+    <button id="generate3DBtn">Generate 3D Design</button>
+    <button id="previewPDFBtn">Preview PDF</button>
+    <button id="downloadPDFBtn">Download PDF</button>
+  </section>
 
-    <footer>
-        <div class="address">Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</div>
-        <div class="contact">Phone: +91 9916511599 & +91 8553608981</div>
-    </footer>
+  <section id="pdfPreview" class="pdf-preview"></section>
 
-    <script src="script.js"></script>
+  <script src="script.js"></script>
 </body>
 </html>
