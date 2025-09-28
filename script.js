@@ -156,33 +156,31 @@ generatePDFBtn.addEventListener('click',()=>{
   if(logoDataURL) try{doc.addImage(logoDataURL,getImageTypeFromDataURL(logoDataURL),margin,10,72,48);}catch(e){}
   doc.setFontSize(18); doc.text("Varshith Interior Solutions",pageWidth/2,y,{align:'center'}); y+=18;
   doc.setFontSize(10); doc.text("NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106",pageWidth/2,y,{align:'center'}); y+=14;
-  doc.text("Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com",pageWidth/2,y,{align:'center'}); y+=25;
-  if(clientName) doc.text(`Client: ${clientName}`,margin,y);
-  if(invoiceNumber) doc.text(`Invoice No: ${invoiceNumber}`,pageWidth-margin-150,y);
-  if(invoiceDate) doc.text(`Date: ${invoiceDate}`,pageWidth-margin-150,y+14); y+=30;
+  doc.text("Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com",pageWidth/2,y,{align:'center'}); y+=20;
 
-  /* Table */
-  try {
-    doc.autoTable({head:[['Item','Material','Qty','Amount']],body,startY:y,theme:'grid',styles:{fontSize:10,cellPadding:6},didDrawPage:data=>{},margin:{top:y}});
-    y=doc.lastAutoTable.finalY+15;
-  } catch(e){console.warn(e);}
+  doc.setFontSize(12);
+  doc.text(`Invoice To: ${clientName}`,margin,y); y+=15;
+  doc.text(`Invoice No: ${invoiceNumber}`,margin,y); y+=15;
+  doc.text(`Date: ${invoiceDate}`,margin,y); y+=20;
+
+  doc.autoTable({startY:y, head:[['Item','Material','Qty','Amount']], body, theme:'grid', margin:{left:margin,right:margin}});
+  let finalY = doc.lastAutoTable.finalY+10;
+
+  /* Payment note */
+  doc.setFontSize(10); doc.text("Payment note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50 % of work and remaining 20 PCT after the completion of work.",margin,finalY); finalY+=30;
 
   /* Totals */
-  doc.setFontSize(11); doc.text(`Total Cost: ${total.toFixed(2)}`,margin,y); y+=15;
-  doc.text(`GST (${gstPercentEl.value}%): ${gstAmount.toFixed(2)}`,margin,y); y+=15;
-  doc.text(`Final Cost: ${final.toFixed(2)}`,margin,y); y+=25;
-
-  /* Payment Note */
-  doc.setFontSize(10);
-  doc.text("Payment note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50 % of work and remaining 20 PCT after the completion of work.", margin,y); y+=30;
+  doc.text(`Total Cost: ${total.toFixed(2)}`,margin,finalY); finalY+=15;
+  doc.text(`GST (${gstPercentEl.value}%): ${gstAmount.toFixed(2)}`,margin,finalY); finalY+=15;
+  doc.text(`Final Cost: ${final.toFixed(2)}`,margin,finalY); finalY+=25;
 
   /* 3D Designs */
   designs.forEach(d=>{
     if(!d.snapshot) return;
-    doc.setFontSize(10); doc.text(`Design: ${d.name}`,margin,y);
-    try{doc.addImage(d.snapshot,getImageTypeFromDataURL(d.snapshot),margin,y+5,120,90);}catch(e){}
-    y+=100;
-    if(y>doc.internal.pageSize.getHeight()-120) doc.addPage(),y=40;
+    doc.setFontSize(10); doc.text(`Design: ${d.name}`,margin,finalY);
+    try{doc.addImage(d.snapshot,getImageTypeFromDataURL(d.snapshot),margin,finalY+5,120,90);}catch(e){}
+    finalY+=100;
+    if(finalY>doc.internal.pageSize.getHeight()-120) doc.addPage(), finalY=40;
   });
 
   doc.save(`Invoice_${invoiceNumber}.pdf`);
