@@ -5,18 +5,21 @@
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>Varshith Interior Solution</title>
   <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/opencv/4.7.0/opencv.js"></script>
   <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
   <header>
     <h1>Varshith Interior Solution</h1>
-    <p>No 39 BRN Ashish Layout Anekal - 562106 | +91 9916511599 & +91 8553608981</p>
   </header>
 
-  <section id="invoiceSection">
+  <section class="invoice-section">
     <h2>Invoice</h2>
+    <input type="file" id="invoiceUpload" onchange="loadInvoice(event)" />
+    <button onclick="addRow()">Add Item</button>
+    <button onclick="calculateTotal()">Update Total</button>
+    <button onclick="downloadPDF()">Download PDF</button>
+
     <table id="invoiceTable">
       <thead>
         <tr>
@@ -27,25 +30,27 @@
         </tr>
       </thead>
       <tbody id="invoiceBody"></tbody>
+      <tfoot>
+        <tr>
+          <td colspan="3" style="text-align:right">Total:</td>
+          <td id="totalAmount">0</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="text-align:right">GST (18%):</td>
+          <td id="gstAmount">0</td>
+        </tr>
+        <tr>
+          <td colspan="3" style="text-align:right">Final Total:</td>
+          <td id="finalAmount">0</td>
+        </tr>
+      </tfoot>
     </table>
-    <div class="invoice-buttons">
-      <button onclick="addRow()">Add Item</button>
-      <input type="file" id="invoiceUpload" onchange="loadInvoice(this)">
-      <button onclick="downloadInvoice()">Download JSON</button>
-      <button onclick="downloadPDF()">Download PDF</button>
-    </div>
-    <div class="totals">
-      <span>Total: ₹<span id="totalAmount">0.00</span></span>
-      <span>GST (18%): ₹<span id="gstAmount">0.00</span></span>
-      <span>Final Total: ₹<span id="finalAmount">0.00</span></span>
-    </div>
   </section>
 
-  <section id="floorPlanSection">
-    <h2>2D to 3D Floor Plan</h2>
-    <input type="file" id="imageUpload" accept="image/*">
-    <button id="generate3D" onclick="generate3D()" style="display:none;">Generate 3D Design</button>
-    <canvas id="inputCanvas" style="display:none;"></canvas>
+  <section class="design-section">
+    <h2>2D to 3D Design</h2>
+    <input type="file" id="imageUpload" accept="image/*" />
+    <button id="generate3D">Generate 3D Design</button>
     <canvas id="threeCanvas"></canvas>
   </section>
 
