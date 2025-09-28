@@ -1,51 +1,49 @@
-/* ==========================
-Invoice + 2D→3D Designer + PDF with totals, payment note, 3D designs
-==========================*/
+const invoiceTbody=document.querySelector('#invoiceTable tbody');
+const addRowBtn=document.getElementById('addRowBtn');
+const clearRowsBtn=document.getElementById('clearRowsBtn');
+const gstPercentEl=document.getElementById('gstPercent');
+const totalCostEl=document.getElementById('totalCost');
+const gstAmountEl=document.getElementById('gstAmount');
+const finalCostEl=document.getElementById('finalCost');
+const generatePDFBtn=document.getElementById('generatePDFBtn');
+const logoUpload=document.getElementById('logoUpload');
+const logoImg=document.getElementById('logoImg');
+const upload2D=document.getElementById('upload2D');
+const designListEl=document.getElementById('designList');
+const progressContainer=document.getElementById('progressContainer');
+const progressBar=document.getElementById('progressBar');
+const preview3D=document.getElementById('preview3D');
 
-const invoiceTbody = document.querySelector('#invoiceTable tbody');
-const addRowBtn = document.getElementById('addRowBtn');
-const clearRowsBtn = document.getElementById('clearRowsBtn');
-const gstPercentEl = document.getElementById('gstPercent');
-const totalCostEl = document.getElementById('totalCost');
-const gstAmountEl = document.getElementById('gstAmount');
-const finalCostEl = document.getElementById('finalCost');
-const generatePDFBtn = document.getElementById('generatePDFBtn');
-const logoUpload = document.getElementById('logoUpload');
-const logoImg = document.getElementById('logoImg');
-const upload2D = document.getElementById('upload2D');
-const designListEl = document.getElementById('designList');
-const progressContainer = document.getElementById('progressContainer');
-const progressBar = document.getElementById('progressBar');
-const preview3D = document.getElementById('preview3D');
-
-let logoDataURL = null;
-let designs = [];
+let logoDataURL=null;
+let designs=[];
 
 function escapeHtml(s){ return String(s||'').replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;'); }
-function uid(prefix='id'){ return prefix + Math.random().toString(36).slice(2,9); }
+function uid(prefix='id'){ return prefix+Math.random().toString(36).slice(2,9); }
 
-// Image resize helper
-function resizeImageFileToDataURL(file, maxW=1200, maxH=1200, mime='image/jpeg', quality=0.8){
+function resizeImageFileToDataURL(file,maxW=1200,maxH=1200,mime='image/jpeg',quality=0.8){
   return new Promise((resolve,reject)=>{
     const r=new FileReader();
-    r.onload=()=> {
+    r.onload=()=>{
       const img=new Image();
       img.onload=()=>{
-        let w=img.width, h=img.height;
+        let w=img.width,h=img.height;
         const ratio=Math.min(maxW/w,maxH/h,1);
-        w=Math.round(w*ratio); h=Math.round(h*ratio);
-        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
-        const ctx=canvas.getContext('2d'); ctx.fillStyle='#fff'; ctx.fillRect(0,0,w,h); ctx.drawImage(img,0,0,w,h);
-        resolve(canvas.toDataURL(mime,quality));
+        w=Math.round(w*ratio);h=Math.round(h*ratio);
+        const canvas=document.createElement('canvas');canvas.width=w;canvas.height=h;
+        const ctx=canvas.getContext('2d');ctx.fillStyle='#fff';ctx.fillRect(0,0,w,h);
+        ctx.drawImage(img,0,0,w,h);
+        try{ resolve(canvas.toDataURL(mime,quality)); }catch(e){ reject(e); }
       };
+      img.onerror=()=>reject(new Error('invalid image'));
       img.src=r.result;
     };
+    r.onerror=()=>reject(new Error('read error'));
     r.readAsDataURL(file);
   });
 }
 
 /* ===== Invoice Table ===== */
-function createRow(item='', material='', qty=1, unitPrice=0){
+function createRow(item='',material='',qty=1,unitPrice=0){
   const tr=document.createElement('tr');
   tr.innerHTML=`
     <td><input class="item" type="text" value="${escapeHtml(item)}"></td>
@@ -56,14 +54,14 @@ function createRow(item='', material='', qty=1, unitPrice=0){
     <td><button class="deleteBtn">Delete</button></td>
   `;
   invoiceTbody.appendChild(tr);
-
   const qtyEl=tr.querySelector('.qty');
   const upEl=tr.querySelector('.unitPrice');
   const amountEl=tr.querySelector('.amount');
-  function updateLine(){ 
+  function updateLine(){
     const q=parseFloat(qtyEl.value)||0;
     const p=parseFloat(upEl.value)||0;
-    amountEl.value=(q*p).toFixed(2); recalcTotals();
+    amountEl.value=(q*p).toFixed(2);
+    recalcTotals();
   }
   qtyEl.addEventListener('input',updateLine);
   upEl.addEventListener('input',updateLine);
@@ -74,7 +72,7 @@ clearRowsBtn.addEventListener('click',()=>{ invoiceTbody.innerHTML=''; recalcTot
 
 function recalcTotals(){
   let total=0;
-  invoiceTbody.querySelectorAll('tr').forEach(tr=> total += parseFloat(tr.querySelector('.amount').value)||0 );
+  invoiceTbody.querySelectorAll('tr').forEach(tr=>{ total+=parseFloat(tr.querySelector('.amount').value)||0; });
   const gstPercent=parseFloat(gstPercentEl.value)||0;
   const gstAmount=total*gstPercent/100;
   const final=total+gstAmount;
@@ -82,25 +80,25 @@ function recalcTotals(){
   gstAmountEl.textContent=gstAmount.toFixed(2);
   finalCostEl.textContent=final.toFixed(2);
 }
-gstPercentEl.addEventListener('input', recalcTotals);
+gstPercentEl.addEventListener('input',recalcTotals);
 
 /* ===== Logo Upload ===== */
-logoUpload.addEventListener('change', async (ev)=>{
+logoUpload.addEventListener('change',async ev=>{
   const f=ev.target.files[0]; if(!f) return;
-  logoDataURL = await resizeImageFileToDataURL(f,600,600,f.type.includes('png')?'image/png':'image/jpeg',0.9);
-  logoImg.src=logoDataURL;
+  try{ logoDataURL=await resizeImageFileToDataURL(f,600,600,f.type.includes('png')?'image/png':'image/jpeg',0.9); logoImg.src=logoDataURL; }
+  catch(e){ const r=new FileReader(); r.onload=e=>{ logoDataURL=e.target.result; logoImg.src=logoDataURL; }; r.readAsDataURL(f); }
 });
 
-/* ===== 2D → 3D Designs ===== */
-upload2D.addEventListener('change', async (ev)=>{
-  const files=Array.from(ev.target.files || []);
+/* ===== Designs ===== */
+upload2D.addEventListener('change',async ev=>{
+  const files=Array.from(ev.target.files||[]);
   for(const f of files){
-    const id=uid('design_'); 
-    const dataURL = await resizeImageFileToDataURL(f,1600,1600,'image/jpeg',0.85);
-    designs.push({id,name:f.name,fileName:f.name,dataURL,snapshot:null});
+    const id=uid('design_'); const fileName=f.name;
+    let dataURL=null;
+    try{ dataURL=await resizeImageFileToDataURL(f,1600,1600,'image/jpeg',0.85); }catch(e){ const r=new FileReader(); dataURL=await new Promise((res,rej)=>{ r.onload=e=>res(e.target.result); r.onerror=rej; r.readAsDataURL(f); }); }
+    designs.push({id,name:fileName,fileName,dataURL,snapshot:null});
   }
-  renderDesignList();
-  upload2D.value='';
+  renderDesignList(); upload2D.value='';
 });
 
 function renderDesignList(){
@@ -108,7 +106,7 @@ function renderDesignList(){
   designs.forEach(d=>{
     const div=document.createElement('div'); div.className='design-item';
     div.innerHTML=`
-      <img class="design-thumb" src="${escapeHtml(d.dataURL)}"/>
+      <img class="design-thumb" src="${escapeHtml(d.dataURL)}" alt="${escapeHtml(d.name)}"/>
       <div class="design-info">
         <input class="design-name" value="${escapeHtml(d.name)}"/>
         <div class="design-controls">
@@ -117,98 +115,75 @@ function renderDesignList(){
         </div>
       </div>
     `;
-    div.querySelector('.design-name').addEventListener('input',e=> d.name=e.target.value);
-    div.querySelector('.gen3dBtn').addEventListener('click',()=> generate3DForDesign(d.id));
+    div.querySelector('.design-name').addEventListener('input',e=>{ d.name=e.target.value; });
+    div.querySelector('.gen3dBtn').addEventListener('click',()=>generate3DForDesign(d.id));
     div.querySelector('.removeBtn').addEventListener('click',()=>{ designs=designs.filter(x=>x.id!==d.id); renderDesignList(); });
     designListEl.appendChild(div);
   });
 }
 
-/* ===== 3D Preview & Snapshot ===== */
+/* ===== 3D Render ===== */
 let globalRenderer=null,globalScene=null,globalCamera=null,globalControls=null,globalMesh=null;
-
 async function generate3DForDesign(designId){
-  const entry=designs.find(d=>d.id===designId); if(!entry) return;
+  const entry=designs.find(d=>d.id===designId); if(!entry) return alert('Design not found');
   progressContainer.style.display='block'; progressBar.style.width='0%';
-  let p=0; const id=setInterval(()=>{ p+=Math.random()*18; if(p>100)p=100; progressBar.style.width=`${p}%`; if(p===100){ clearInterval(id); setTimeout(()=>{ progressContainer.style.display='none'; render3DPlaneAndCapture(entry); },200); } },150);
+  let p=0; const id=setInterval(()=>{ p+=Math.random()*20; if(p>100)p=100; progressBar.style.width=p+'%'; if(p===100){ clearInterval(id); setTimeout(()=>{ progressContainer.style.display='none'; render3DPlaneAndCapture(entry); },200); } },150);
 }
-
 function render3DPlaneAndCapture(entry){
-  if(globalRenderer){ try{globalRenderer.forceContextLoss(); globalRenderer.domElement.remove();}catch(e){} }
+  if(globalRenderer){ try{ globalRenderer.forceContextLoss(); globalRenderer.domElement.remove(); }catch(e){} globalRenderer=null; globalScene=null; globalCamera=null; globalControls=null; globalMesh=null; }
   globalScene=new THREE.Scene(); globalScene.background=new THREE.Color(0xf3f3f3);
-  const w=preview3D.clientWidth||600, h=preview3D.clientHeight||380;
+  const w=preview3D.clientWidth||600,h=preview3D.clientHeight||380;
   globalCamera=new THREE.PerspectiveCamera(45,w/h,0.1,1000); globalCamera.position.set(0,0,5);
-  globalRenderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true});
-  globalRenderer.setSize(w,h); preview3D.innerHTML=''; preview3D.appendChild(globalRenderer.domElement);
+  globalRenderer=new THREE.WebGLRenderer({antialias:true,preserveDrawingBuffer:true}); globalRenderer.setSize(w,h);
+  preview3D.innerHTML=''; preview3D.appendChild(globalRenderer.domElement);
   globalScene.add(new THREE.AmbientLight(0xffffff,0.9));
   const dir=new THREE.DirectionalLight(0xffffff,0.4); dir.position.set(0,1,1); globalScene.add(dir);
-  const geometry=new THREE.PlaneGeometry(4,3);
-  const texture=new THREE.TextureLoader().load(entry.dataURL,()=>{globalRenderer.render(globalScene,globalCamera);});
-  globalMesh=new THREE.Mesh(geometry,new THREE.MeshPhongMaterial({map:texture,side:THREE.DoubleSide}));
-  globalScene.add(globalMesh);
+  const geometry=new THREE.PlaneGeometry(4,3); const loader=new THREE.TextureLoader();
+  const texture=loader.load(entry.dataURL,()=>{ globalRenderer.render(globalScene,globalCamera); });
+  globalMesh=new THREE.Mesh(geometry,new THREE.MeshPhongMaterial({map:texture,side:THREE.DoubleSide})); globalScene.add(globalMesh);
   globalControls=new THREE.OrbitControls(globalCamera,globalRenderer.domElement); globalControls.enableDamping=true; globalControls.dampingFactor=0.08;
-  function animate(){ requestAnimationFrame(animate); globalControls.update(); globalRenderer.render(globalScene,globalCamera); }
-  animate();
-  setTimeout(()=>{ try{ entry.snapshot=globalRenderer.domElement.toDataURL('image/png'); }catch(e){entry.snapshot=null;} renderDesignList(); alert(`3D Snapshot generated for "${entry.name}"`); },800);
+  (function animate(){ requestAnimationFrame(animate); globalControls.update(); globalRenderer.render(globalScene,globalCamera); })();
+  setTimeout(()=>{ try{ entry.snapshot=globalRenderer.domElement.toDataURL('image/png'); }catch(e){ entry.snapshot=null; } renderDesignList(); alert(`3D Preview captured for "${entry.name}"`); },800);
 }
 
 /* ===== PDF Generation ===== */
 generatePDFBtn.addEventListener('click',()=>{
-  const {jsPDF}=window.jspdf; 
-  const doc=new jsPDF('p','pt','a4'); 
-  const pageWidth=doc.internal.pageSize.getWidth(); 
-  const pageHeight=doc.internal.pageSize.getHeight(); 
+  const { jsPDF }=window.jspdf;
+  const doc=new jsPDF('p','pt','a4'); const pageWidth=doc.internal.pageSize.getWidth(),pageHeight=doc.internal.pageSize.getHeight();
   let y=40;
-
-  function addPageNumber(){
-    const pageCount=doc.internal.getNumberOfPages();
-    for(let i=1;i<=pageCount;i++){ doc.setPage(i); doc.setFontSize(10); doc.setTextColor(100); doc.text(`Page ${i} of ${pageCount}`,pageWidth-80,pageHeight-20);}
-  }
-
-  doc.setFillColor(46,125,50); doc.rect(0,0,pageWidth,60,'F');
-  doc.setFontSize(20); doc.setTextColor(255); doc.text("Varshith Interior Solutions",pageWidth/2,38,{align:'center'});
-  doc.setFontSize(12); doc.setTextColor(255); 
-  doc.text("NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106",pageWidth/2,55,{align:'center'});
+  if(logoDataURL){ try{ doc.addImage(logoDataURL,'PNG',40,20,72,48); }catch(e){} }
+  doc.setFontSize(18); doc.setTextColor(20,20,20); doc.text("Varshith Interior Solutions",pageWidth/2,40,{align:'center'});
+  doc.setFontSize(10); doc.text("NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106",pageWidth/2,56,{align:'center'});
   doc.text("Phone: +91 9916511599 & +91 8553608981 | Email: Varshithinteriorsolutions@gmail.com",pageWidth/2,70,{align:'center'});
 
-  y=80; 
-  doc.setFontSize(11); doc.setTextColor(0);
-  doc.text(`Invoice No: ${document.getElementById('invoiceNumber').value||''}`,40,y);
-  doc.text(`Date: ${document.getElementById('invoiceDate').value||''}`,pageWidth-120,y);
-  y+=20;
-  doc.text(`Client Name: ${document.getElementById('clientName').value||''}`,40,y); 
-  y+=15;
+  y+=40; doc.setFontSize(10);
+  const clientName=document.getElementById('clientName').value||'';
+  const invoiceNumber=document.getElementById('invoiceNumber').value||'';
+  const invoiceDate=document.getElementById('invoiceDate').value||new Date().toLocaleDateString();
+  if(clientName) doc.text(`Client: ${clientName}`,40,y); if(invoiceNumber) doc.text(`Invoice No: ${invoiceNumber}`,pageWidth-200,y); y+=15;
+  doc.text(`Date: ${invoiceDate}`,pageWidth-200,y);
 
-  const tableData=[]; 
-  invoiceTbody.querySelectorAll('tr').forEach(tr=>{
-    const row=[
+  const body=[]; invoiceTbody.querySelectorAll('tr').forEach(tr=>{
+    body.push([
       tr.querySelector('.item').value,
       tr.querySelector('.material').value,
       tr.querySelector('.qty').value,
       tr.querySelector('.unitPrice').value,
       tr.querySelector('.amount').value
-    ];
-    tableData.push(row);
+    ]);
   });
 
-  doc.autoTable({startY:y, head:[['Item','Material Used','Qty','Unit Price','Amount']], body:tableData, theme:'grid', headStyles:{fillColor:[46,125,50]}, styles:{fontSize:10}});
+  doc.autoTable({startY:y, head:[['Item','Material Used','Qty','Unit Price','Amount']], body, theme:'grid', headStyles:{fillColor:[46,125,50]}, styles:{fontSize:10}});
   y=doc.lastAutoTable.finalY+10;
-
   doc.text(`Total Cost: ${totalCostEl.textContent}`,40,y); y+=12;
   doc.text(`GST (${gstPercentEl.value}%): ${gstAmountEl.textContent}`,40,y); y+=12;
   doc.text(`Final Cost: ${finalCostEl.textContent}`,40,y); y+=20;
-  doc.text("Payment note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50% of work and remaining 20 PCT after completion.",40,y,{maxWidth:pageWidth-80}); 
-  y+=40;
+  doc.text("Payment note: 50 PCT of the quoted amount has to be paid as advance, 30 PCT after completing 50% of work and remaining 20 PCT after the completion of work.",40,y,{maxWidth:pageWidth-80}); y+=40;
 
+  // Add all designs
   designs.forEach(d=>{
-    if(d.snapshot){ 
-      if(y+150>pageHeight) { doc.addPage(); y=40; } 
-      doc.text(`Design: ${d.name}`,40,y); y+=12;
-      doc.addImage(d.snapshot,'PNG',40,y,180,135); 
-      y+=150; 
-    }
+    if(d.snapshot){ const w=150,h=112; doc.setFontSize(10); doc.text(d.name,40,y); y+=12; try{ doc.addImage(d.snapshot,'PNG',40,y,w,h); }catch(e){} y+=h+15; if(y>pageHeight-80){ doc.addPage(); y=40; } }
   });
 
-  addPageNumber();
-  doc.save(`Invoice_${document.getElementById('invoiceNumber').value||'NEW'}.pdf`);
+  doc.save(`Invoice_${invoiceNumber||Date.now()}.pdf`);
 });
