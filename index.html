@@ -2,11 +2,8 @@
 <html lang="en">
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Varshith Interior Solutions</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
     <header>
@@ -14,12 +11,9 @@
     </header>
 
     <main>
-        <!-- Invoice Section -->
         <section id="invoice-section">
             <h2>Invoice</h2>
-            <input type="file" id="uploadInvoice" accept=".json">
-            <button id="downloadPdf">Download PDF</button>
-            <table id="invoiceTable">
+            <table id="invoice-table">
                 <thead>
                     <tr>
                         <th>Item</th>
@@ -30,27 +24,31 @@
                 </thead>
                 <tbody>
                     <tr>
-                        <td><input type="text" value="Sample Item"></td>
-                        <td><input type="text" value="Sample Material"></td>
-                        <td><input type="number" value="1" min="1" class="qty"></td>
-                        <td><input type="number" value="0" min="0" class="amount"></td>
+                        <td contenteditable="true">Item 1</td>
+                        <td contenteditable="true">Material 1</td>
+                        <td contenteditable="true">1</td>
+                        <td contenteditable="true">0.00</td>
                     </tr>
                 </tbody>
             </table>
+            <button onclick="addRow()">Add Row</button>
             <div id="totals">
-                <div>Total Cost: <span id="totalCost">0</span></div>
-                <div>GST (%): <input type="number" id="gstPercent" value="18" min="0" max="100"> <span id="gstAmount">0</span></div>
-                <div>Final Cost: <span id="finalCost">0</span></div>
+                <p>Total Cost: <span id="totalCost">0.00</span></p>
+                <p>GST (%): <input type="number" id="gstPercent" value="18" onchange="calculateTotals()"> 
+                GST Amount: <span id="gstAmount">0.00</span></p>
+                <p>Final Cost: <span id="finalCost">0.00</span></p>
             </div>
             <p>Note: 50% advance, 30% after 50% work completion, 20% on project completion.</p>
+            <button onclick="downloadPDF()">Download PDF</button>
         </section>
 
-        <!-- 3D Design Section -->
         <section id="design-section">
-            <h2>3D Design Preview</h2>
-            <input type="file" id="uploadImage" accept="image/*">
-            <div id="progress"></div>
-            <div id="3dPreview"></div>
+            <h2>2D → 3D Design</h2>
+            <input type="file" id="upload2D" accept="image/*">
+            <button onclick="generate3D()">Generate 3D Design</button>
+            <p id="progress"></p>
+            <div id="preview3D" style="width:600px; height:400px;"></div>
+            <button onclick="download3DPDF()">Download 3D PDF</button>
         </section>
     </main>
 
@@ -60,6 +58,8 @@
         <p>Email: Varshithinteriorsolutions@gmail.com</p>
     </footer>
 
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
