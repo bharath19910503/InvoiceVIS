@@ -3,7 +3,7 @@
 <head>
   <meta charset="utf-8" />
   <meta name="viewport" content="width=device-width,initial-scale=1" />
-  <title>Varshith Interior Solutions — Invoice & 2D→3D Designer</title>
+  <title>Varshith Interior Solutions — Invoice & 3D Preview</title>
 
   <link rel="stylesheet" href="style.css">
 
@@ -18,7 +18,7 @@
 <body>
   <header>
     <div class="header-left">
-      <img id="logoImg" src="" alt="Logo" />
+      <img id="logoImg" src="" alt="Logo (upload below)" />
       <div class="logo-upload">
         <label class="btn">Upload Logo
           <input id="logoUpload" type="file" accept="image/*">
@@ -72,11 +72,7 @@
         </table>
       </div>
 
-      <div class="summary">
-        <div>Total Cost: <span id="totalCost">0.00</span></div>
-        <div>GST: <span id="gstAmount">0.00</span></div>
-        <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
-      </div>
+      <textarea id="note" rows="3"></textarea>
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
