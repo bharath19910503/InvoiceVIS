@@ -25,12 +25,10 @@
         </label>
       </div>
     </div>
-
     <div class="header-center">
       <h1>Varshith Interior Solutions</h1>
       <div class="company-sub">NO 39 BRN Ashish Layout, Near Sri Thimmaraya Swami Gudi, Anekal - 562106</div>
     </div>
-
     <div class="header-right">
       <div>Phone: +91 9916511599</div>
       <div>Phone: +91 8553608981</div>
@@ -66,14 +64,22 @@
               <th></th>
             </tr>
           </thead>
-          <tbody></tbody>
+          <tbody>
+          </tbody>
         </table>
       </div>
 
-      <div id="summary" class="summary"></div>
+      <div class="summary">
+        <div>Total Cost: <span id="totalCost">0.00</span></div>
+        <div>GST: <span id="gstAmount">0.00</span></div>
+        <div class="final">Final Cost: <span id="finalCost">0.00</span></div>
+      </div>
 
       <div class="actions">
         <button id="generatePDFBtn" class="primary">Download Invoice PDF</button>
+        <button id="exportJsonBtn">Export Invoice (JSON)</button>
+        <input id="importJsonFile" type="file" accept=".json" style="display:none"/>
+        <button id="importJsonBtn">Import Invoice (JSON)</button>
       </div>
     </section>
 
@@ -82,12 +88,12 @@
 
       <div class="uploader">
         <input id="upload2D" type="file" accept="image/*" multiple>
-        <div class="hint">Select multiple images; each will appear below with a name and Generate 3D button.</div>
+        <div class="hint">Select multiple 2D images; each will appear below with a name and Generate 3D button.</div>
       </div>
 
       <div id="designList" class="design-list"></div>
 
-      <div id="progressContainer" class="progress-container" aria-hidden="true" style="display:none;">
+      <div id="progressContainer" class="progress-container" style="display:none;">
         <div id="progressBar" class="progress-bar"></div>
       </div>
 
