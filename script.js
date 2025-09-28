@@ -1,86 +1,76 @@
-const designList = document.getElementById("design-list");
-const addDesignInput = document.getElementById("add-design");
-const note = document.getElementById("note");
-const generatePDFBtn = document.getElementById("generate-pdf");
 let designs = [];
 
-// Add designer files
-addDesignInput.addEventListener("change", (e) => {
-  const files = Array.from(e.target.files);
-  files.forEach(file => {
-    const reader = new FileReader();
-    reader.onload = () => {
-      const design = { name: file.name, src: reader.result };
-      designs.push(design);
-      renderDesigns();
-    };
-    reader.readAsDataURL(file);
-  });
+const designList = document.getElementById("designList");
+const addDesignBtn = document.getElementById("addDesignBtn");
+const designNameInput = document.getElementById("designName");
+const designAmountInput = document.getElementById("designAmount");
+
+// Add Design
+addDesignBtn.addEventListener("click", () => {
+  const name = designNameInput.value.trim();
+  const amount = parseFloat(designAmountInput.value);
+
+  if (!name || isNaN(amount)) return alert("Enter valid name and amount");
+
+  designs.push({ name, amount });
+  renderDesigns();
+
+  designNameInput.value = "";
+  designAmountInput.value = "";
 });
 
-// Render designer list
+// Render Design List
 function renderDesigns() {
   designList.innerHTML = "";
   designs.forEach((d, i) => {
     const div = document.createElement("div");
     div.className = "design-item";
     div.innerHTML = `
-      <div class="design-info">
-        <strong>${d.name}</strong>
-        <div class="design-preview" id="preview-${i}"></div>
-      </div>
-      <div class="design-controls">
-        <button onclick="removeDesign(${i})">Delete</button>
-      </div>
+      <span>${d.name} - ₹${d.amount.toLocaleString('en-IN')}</span>
+      <button class="deleteBtn" onclick="deleteDesign(${i})">Delete</button>
     `;
     designList.appendChild(div);
-    render3DPreview(`preview-${i}`, d);
   });
 }
 
-// Remove designer
-function removeDesign(index) {
+// Delete Design
+function deleteDesign(index) {
   designs.splice(index, 1);
   renderDesigns();
 }
 
-// Render placeholder 3D preview using Three.js
-function render3DPreview(containerId, file) {
-  const container = document.getElementById(containerId);
-  container.innerHTML = "";
-  const scene = new THREE.Scene();
-  const camera = new THREE.PerspectiveCamera(75, container.clientWidth/container.clientHeight, 0.1, 1000);
-  const renderer = new THREE.WebGLRenderer({ antialias:true, alpha:true });
-  renderer.setSize(container.clientWidth, container.clientHeight);
-  container.appendChild(renderer.domElement);
-
-  const geometry = new THREE.BoxGeometry(1,1,1);
-  const material = new THREE.MeshNormalMaterial();
-  const cube = new THREE.Mesh(geometry, material);
-  scene.add(cube);
-  camera.position.z = 2;
-
-  function animate() {
-    requestAnimationFrame(animate);
-    cube.rotation.x += 0.01;
-    cube.rotation.y += 0.01;
-    renderer.render(scene, camera);
-  }
-  animate();
+// Format number in Indian Rupees
+function formatINR(amount) {
+  return new Intl.NumberFormat('en-IN', { style: 'currency', currency: 'INR' }).format(amount);
 }
 
-// PDF generation
-generatePDFBtn.addEventListener("click", () => {
+// Generate PDF
+document.getElementById("generatePDFBtn").addEventListener("click", () => {
+  if (!designs.length) return alert("Add at least one design");
+
   const { jsPDF } = window.jspdf;
   const doc = new jsPDF();
 
   doc.setFontSize(16);
   doc.text("Invoice", 14, 20);
+
   doc.setFontSize(12);
-  doc.text(note.value, 14, 30);
+  let yPos = 30;
 
   designs.forEach((d, i) => {
-    doc.text(`${i+1}. ${d.name}`, 14, 40 + i*10);
+    doc.text(`${i + 1}. ${d.name} - ${formatINR(d.amount)}`, 14, yPos);
+    yPos += 8;
+
+    const advance = d.amount * 0.5;
+    const mid = d.amount * 0.3;
+    const final = d.amount * 0.2;
+
+    doc.text(`   - 50% Advance: ${formatINR(advance)}`, 18, yPos);
+    yPos += 6;
+    doc.text(`   - 30% After 50% Completion: ${formatINR(mid)}`, 18, yPos);
+    yPos += 6;
+    doc.text(`   - 20% On Completion: ${formatINR(final)}`, 18, yPos);
+    yPos += 10;
   });
 
   doc.save("invoice.pdf");

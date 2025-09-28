@@ -5,16 +5,14 @@
 <meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Invoice Generator</title>
 <link rel="stylesheet" href="style.css">
-<script src="https://cdn.jsdelivr.net/npm/three@0.158.0/build/three.min.js"></script>
-<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 </head>
 <body>
 <header>
   <div class="header-left">
-    <img src="logo.png" alt="Company Logo">
+    <img src="logo.png" alt="Logo">
     <div>
-      <h1>My Company</h1>
-      <div class="company-sub">Invoice Generator</div>
+      <h1>Company Name</h1>
+      <div class="company-sub">3D Design & Modeling</div>
     </div>
   </div>
 </header>
@@ -22,32 +20,24 @@
 <main>
   <div class="left-col">
     <div class="controls">
-      <label class="btn">
-        Add Designer File
-        <input type="file" id="add-design" multiple>
-      </label>
+      <input type="text" id="designName" placeholder="Enter Design Name">
+      <input type="number" id="designAmount" placeholder="Enter Amount">
+      <button id="addDesignBtn">Add Design</button>
     </div>
 
-    <div class="design-list" id="design-list">
-      <!-- Designer files will be added here -->
-    </div>
+    <div class="design-list" id="designList"></div>
 
-    <textarea id="note" placeholder="50% of the quoted amount has to be paid as advance, 30% after completing 50% of work and remaining 20% on completion."></textarea>
+    <div id="note">
+      50% of the quoted amount has to be paid as advance, 30% after completing 50% of work and remaining 20% on completion.
+    </div>
 
     <div class="actions">
-      <button class="primary" id="generate-pdf">Generate PDF</button>
+      <button id="generatePDFBtn" class="primary">Generate PDF</button>
     </div>
-  </div>
-
-  <div class="right-col">
-    <div class="preview-3d" id="main-preview">3D Preview</div>
   </div>
 </main>
 
-<footer>
-  &copy; 2025 My Company
-</footer>
-
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
 <script src="script.js"></script>
 </body>
 </html>
