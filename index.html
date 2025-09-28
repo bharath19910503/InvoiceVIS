@@ -3,63 +3,54 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Insert</title>
+    <title>Invoice & 2D to 3D Designer</title>
     <link rel="stylesheet" href="style.css">
 </head>
 <body>
-    <div class="container">
-        <h1>Invoice Insert - Varshith Interior Solution</h1>
+    <header>
+        <h1>Varshith Interior Solution</h1>
+    </header>
 
-        <!-- Invoice Details -->
-        <div class="invoice-details">
-            <h2>Invoice Details</h2>
-            <label>Client Name: <input type="text" id="clientName"></label>
-            <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
-            <label>Date: <input type="date" id="invoiceDate"></label>
+    <section id="invoice-section">
+        <h2>Invoice Details</h2>
+        <div class="invoice-inputs">
+            <input type="text" id="clientName" placeholder="Client Name">
+            <input type="text" id="invoiceNumber" placeholder="Invoice Number">
+            <input type="date" id="invoiceDate">
         </div>
 
-        <!-- Items Table -->
-        <div class="invoice-table">
-            <table id="itemsTable">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Quantity</th>
-                        <th>Rate</th>
-                        <th>Cost</th>
-                    </tr>
-                </thead>
-                <tbody></tbody>
-            </table>
-            <button id="addItemBtn">Add Item</button>
+        <table id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Qty</th>
+                    <th>Rate</th>
+                    <th>Cost</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="addItemBtn">Add Item</button>
+
+        <div id="totals">
+            <div>Total Cost: <span id="totalCost">0</span></div>
+            <div>GST: <span id="gst">0</span></div>
+            <div>Final Cost: <span id="finalCost">0</span></div>
         </div>
 
-        <!-- Total -->
-        <div class="totals">
-            <p>Total Cost: <span id="totalCost">0</span></p>
-            <p>GST (18%): <span id="gstAmount">0</span></p>
-            <p>Final Cost: <span id="finalCost">0</span></p>
-        </div>
+        <button id="generateInvoiceBtn">Generate Invoice</button>
+        <button id="downloadInvoiceBtn">Download Invoice PDF</button>
+    </section>
 
-        <!-- Actions -->
-        <div class="actions">
-            <button id="generateInvoiceBtn">Generate Invoice</button>
-            <button id="downloadPdfBtn">Download PDF</button>
-            <input type="file" id="uploadInvoice" accept=".json">
-        </div>
-
-        <hr>
-
-        <!-- 2D to 3D Design -->
-        <div class="design-converter">
-            <h2>2D to 3D Design</h2>
-            <input type="file" id="upload2D" accept="image/*">
-            <button id="generate3D">Generate 3D Design</button>
-            <div id="threeContainer"></div>
-        </div>
-    </div>
+    <section id="design-section">
+        <h2>2D to 3D Designer</h2>
+        <input type="file" id="upload2D" accept=".png,.jpg,.jpeg">
+        <button id="generate3DBtn">Generate 3D Design</button>
+        <div id="3dPreview"></div>
+    </section>
 
     <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
