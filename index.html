@@ -1,65 +1,55 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <title>Varshith Interior Solutions</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<title>Varshith Interiors Invoice & 3D Generator</title>
+<link rel="stylesheet" href="style.css">
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Varshith Interior Solutions</h1>
-    </header>
+<h1>Varshith Interiors Invoice & 3D Generator</h1>
 
-    <main>
-        <section id="invoice-section">
-            <h2>Invoice</h2>
-            <table id="invoice-table">
-                <thead>
-                    <tr>
-                        <th>Item</th>
-                        <th>Material Used</th>
-                        <th>Qty</th>
-                        <th>Amount</th>
-                    </tr>
-                </thead>
-                <tbody>
-                    <tr>
-                        <td contenteditable="true">Item 1</td>
-                        <td contenteditable="true">Material 1</td>
-                        <td contenteditable="true">1</td>
-                        <td contenteditable="true">0.00</td>
-                    </tr>
-                </tbody>
-            </table>
-            <button onclick="addRow()">Add Row</button>
-            <div id="totals">
-                <p>Total Cost: <span id="totalCost">0.00</span></p>
-                <p>GST (%): <input type="number" id="gstPercent" value="18" onchange="calculateTotals()"> 
-                GST Amount: <span id="gstAmount">0.00</span></p>
-                <p>Final Cost: <span id="finalCost">0.00</span></p>
-            </div>
-            <p>Note: 50% advance, 30% after 50% work completion, 20% on project completion.</p>
-            <button onclick="downloadPDF()">Download PDF</button>
-        </section>
+<div id="invoiceControls">
+  <button onclick="addRow()">Add Row</button>
+  <button onclick="downloadPDF()">Download PDF</button>
+  <label>GST %: <input type="number" id="gstPercent" value="18" onchange="calculateTotals()"></label>
+</div>
 
-        <section id="design-section">
-            <h2>2D → 3D Design</h2>
-            <input type="file" id="upload2D" accept="image/*">
-            <button onclick="generate3D()">Generate 3D Design</button>
-            <p id="progress"></p>
-            <div id="preview3D" style="width:600px; height:400px;"></div>
-            <button onclick="download3DPDF()">Download 3D PDF</button>
-        </section>
-    </main>
+<table id="invoiceTable">
+  <thead>
+    <tr>
+      <th>Item</th>
+      <th>Material Used</th>
+      <th>Qty</th>
+      <th>Amount</th>
+    </tr>
+  </thead>
+  <tbody>
+    <tr>
+      <td><input type="text" placeholder="Item Name"></td>
+      <td><input type="text" placeholder="Material"></td>
+      <td><input type="number" value="1" onchange="calculateTotals()"></td>
+      <td><input type="number" value="0" onchange="calculateTotals()"></td>
+    </tr>
+  </tbody>
+</table>
 
-    <footer>
-        <p>Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106</p>
-        <p>Phone: +91 9916511599 & +91 8553608981</p>
-        <p>Email: Varshithinteriorsolutions@gmail.com</p>
-    </footer>
+<div>
+  <strong>Total Cost:</strong> <span id="totalCost">0</span><br>
+  <strong>GST:</strong> <span id="gstAmount">0</span><br>
+  <strong>Final Cost:</strong> <span id="finalCost">0</span>
+</div>
 
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.155.0/build/three.min.js"></script>
-    <script src="script.js"></script>
+<hr>
+
+<h2>Upload 2D Design to Generate 3D</h2>
+<input type="file" id="designUpload" accept="image/*">
+<button onclick="generate3D()">Generate 3D</button>
+<div id="progressBar"><div id="progress">0%</div></div>
+
+<div id="3dContainer"></div>
+
+<script src="script.js"></script>
 </body>
 </html>
