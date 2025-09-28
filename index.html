@@ -1,58 +1,58 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-  <meta charset="UTF-8">
-  <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Invoice Insert - Varshith Interior Solution</title>
-  <link rel="stylesheet" href="style.css">
-  <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Insert - Varshith Interior Solution</title>
+    <link rel="stylesheet" href="style.css">
 </head>
 <body>
-  <header>
-    <img src="logo.png" alt="Varshith Logo" class="logo">
-    <h1>Varshith Interior Solution</h1>
-  </header>
+    <div class="container">
+        <h1>Invoice Insert - Varshith Interior Solution</h1>
 
-  <section class="invoice-details">
-    <h2>Invoice Details</h2>
-    <div class="details-grid">
-      <label>Client Name:<input type="text" id="clientName"></label>
-      <label>Invoice Number:<input type="text" id="invoiceNumber"></label>
-      <label>Date:<input type="date" id="invoiceDate"></label>
+        <!-- Invoice Details -->
+        <div class="invoice-details">
+            <h2>Invoice Details</h2>
+            <label>Client Name: <input type="text" id="clientName"></label>
+            <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
+            <label>Date: <input type="date" id="invoiceDate"></label>
+        </div>
+
+        <!-- Invoice Table -->
+        <table id="invoiceTable">
+            <thead>
+                <tr>
+                    <th>Item</th>
+                    <th>Quantity</th>
+                    <th>Price</th>
+                </tr>
+            </thead>
+            <tbody></tbody>
+        </table>
+        <button id="addItemBtn">Add Item</button>
+
+        <!-- Totals -->
+        <div class="totals">
+            <p>Total Cost: <span id="totalCost">0</span></p>
+            <p>GST: <span id="gst">0</span></p>
+            <p>Final Cost: <span id="finalCost">0</span></p>
+        </div>
+
+        <!-- Actions -->
+        <div class="actions">
+            <button id="generateInvoice">Generate Invoice</button>
+            <button id="downloadInvoice">Download Invoice PDF</button>
+        </div>
+
+        <!-- Upload 2D Design -->
+        <div class="design">
+            <h2>2D to 3D Design Converter</h2>
+            <input type="file" id="upload2D">
+            <button id="generate3D">Generate 3D Design</button>
+            <div id="preview3D"></div>
+        </div>
     </div>
-  </section>
 
-  <section class="invoice-table-section">
-    <table id="invoiceTable">
-      <thead>
-        <tr>
-          <th>Description</th>
-          <th>Quantity</th>
-          <th>Rate</th>
-          <th>Cost</th>
-        </tr>
-      </thead>
-      <tbody></tbody>
-    </table>
-    <button id="addItemBtn">Add Item</button>
-  </section>
-
-  <section class="totals">
-    <p>Total Cost: <span id="totalCost">0</span></p>
-    <p>GST (18%): <span id="gst">0</span></p>
-    <p>Final Cost: <span id="finalCost">0</span></p>
-  </section>
-
-  <section class="actions">
-    <input type="file" id="uploadInvoice" accept=".json">
-    <input type="file" id="upload2DDesign" accept="image/*">
-    <button id="generate3DBtn">Generate 3D Design</button>
-    <button id="previewPDFBtn">Preview PDF</button>
-    <button id="downloadPDFBtn">Download PDF</button>
-  </section>
-
-  <section id="pdfPreview" class="pdf-preview"></section>
-
-  <script src="script.js"></script>
+    <script src="script.js"></script>
 </body>
 </html>
