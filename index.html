@@ -5,53 +5,56 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Invoice Insert - Varshith Interior Solution</title>
     <link rel="stylesheet" href="style.css">
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <div class="container">
-        <h1>Invoice Insert - Varshith Interior Solution</h1>
+    <header>
+        <h1>Varshith Interior Solution</h1>
+    </header>
 
-        <!-- Invoice Details -->
-        <div class="invoice-details">
+    <main>
+        <section id="invoice-section">
             <h2>Invoice Details</h2>
-            <label>Client Name: <input type="text" id="clientName"></label>
-            <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
-            <label>Date: <input type="date" id="invoiceDate"></label>
-        </div>
+            <div class="invoice-form">
+                <input type="text" id="clientName" placeholder="Client Name">
+                <input type="text" id="invoiceNumber" placeholder="Invoice Number">
+                <input type="date" id="invoiceDate" placeholder="Invoice Date">
+            </div>
 
-        <!-- Invoice Table -->
-        <table id="invoiceTable">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Quantity</th>
-                    <th>Price</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <button id="addItemBtn">Add Item</button>
+            <table id="invoiceTable">
+                <thead>
+                    <tr>
+                        <th>Item</th>
+                        <th>Quantity</th>
+                        <th>Price</th>
+                        <th>Total</th>
+                    </tr>
+                </thead>
+                <tbody></tbody>
+            </table>
+            <button id="addItemBtn">Add Item</button>
 
-        <!-- Totals -->
-        <div class="totals">
-            <p>Total Cost: <span id="totalCost">0</span></p>
-            <p>GST: <span id="gst">0</span></p>
-            <p>Final Cost: <span id="finalCost">0</span></p>
-        </div>
+            <div class="totals">
+                <p>Total Cost: <span id="totalCost">0</span></p>
+                <p>GST: <span id="gstAmount">0</span></p>
+                <p>Final Cost: <span id="finalCost">0</span></p>
+            </div>
 
-        <!-- Actions -->
-        <div class="actions">
-            <button id="generateInvoice">Generate Invoice</button>
-            <button id="downloadInvoice">Download Invoice PDF</button>
-        </div>
+            <div class="invoice-actions">
+                <button id="generateInvoiceBtn">Generate Invoice</button>
+                <button id="downloadInvoiceBtn">Download PDF</button>
+                <input type="file" id="uploadInvoice" accept=".json">
+            </div>
+        </section>
 
-        <!-- Upload 2D Design -->
-        <div class="design">
-            <h2>2D to 3D Design Converter</h2>
-            <input type="file" id="upload2D">
-            <button id="generate3D">Generate 3D Design</button>
-            <div id="preview3D"></div>
-        </div>
-    </div>
+        <section id="design-section">
+            <h2>2D to 3D Designer</h2>
+            <input type="file" id="upload2D" accept=".svg,.dxf,.json">
+            <button id="generate3DBtn">Generate 3D Design</button>
+            <div id="threeDPreview"></div>
+        </section>
+    </main>
 
     <script src="script.js"></script>
 </body>
