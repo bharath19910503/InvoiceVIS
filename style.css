@@ -14,7 +14,6 @@ header {
 
 h2 {
     color: #34495e;
-    margin-top: 20px;
 }
 
 .invoice-inputs input {
@@ -32,6 +31,11 @@ table {
 th, td {
     border: 1px solid #ddd;
     padding: 8px;
+    text-align: center;
+}
+
+td[contenteditable="true"] {
+    min-width: 50px;
     text-align: center;
 }
 
@@ -54,8 +58,4 @@ button:hover {
     height: 400px;
     background: #ecf0f1;
     margin-top: 20px;
-}
-
-.invoice-actions {
-    margin-top: 10px;
 }
