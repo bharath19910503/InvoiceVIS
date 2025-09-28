@@ -3,59 +3,64 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice Insert - Varshith Interior Solution</title>
+    <title>Invoice Insert</title>
     <link rel="stylesheet" href="style.css">
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Varshith Interior Solution</h1>
-    </header>
+    <div class="container">
+        <h1>Invoice Insert - Varshith Interior Solution</h1>
 
-    <main>
-        <section id="invoice-section">
+        <!-- Invoice Details -->
+        <div class="invoice-details">
             <h2>Invoice Details</h2>
-            <div class="invoice-form">
-                <input type="text" id="clientName" placeholder="Client Name">
-                <input type="text" id="invoiceNumber" placeholder="Invoice Number">
-                <input type="date" id="invoiceDate" placeholder="Invoice Date">
-            </div>
+            <label>Client Name: <input type="text" id="clientName"></label>
+            <label>Invoice Number: <input type="text" id="invoiceNumber"></label>
+            <label>Date: <input type="date" id="invoiceDate"></label>
+        </div>
 
-            <table id="invoiceTable">
+        <!-- Items Table -->
+        <div class="invoice-table">
+            <table id="itemsTable">
                 <thead>
                     <tr>
                         <th>Item</th>
                         <th>Quantity</th>
-                        <th>Price</th>
-                        <th>Total</th>
+                        <th>Rate</th>
+                        <th>Cost</th>
                     </tr>
                 </thead>
                 <tbody></tbody>
             </table>
             <button id="addItemBtn">Add Item</button>
+        </div>
 
-            <div class="totals">
-                <p>Total Cost: <span id="totalCost">0</span></p>
-                <p>GST: <span id="gstAmount">0</span></p>
-                <p>Final Cost: <span id="finalCost">0</span></p>
-            </div>
+        <!-- Total -->
+        <div class="totals">
+            <p>Total Cost: <span id="totalCost">0</span></p>
+            <p>GST (18%): <span id="gstAmount">0</span></p>
+            <p>Final Cost: <span id="finalCost">0</span></p>
+        </div>
 
-            <div class="invoice-actions">
-                <button id="generateInvoiceBtn">Generate Invoice</button>
-                <button id="downloadInvoiceBtn">Download PDF</button>
-                <input type="file" id="uploadInvoice" accept=".json">
-            </div>
-        </section>
+        <!-- Actions -->
+        <div class="actions">
+            <button id="generateInvoiceBtn">Generate Invoice</button>
+            <button id="downloadPdfBtn">Download PDF</button>
+            <input type="file" id="uploadInvoice" accept=".json">
+        </div>
 
-        <section id="design-section">
-            <h2>2D to 3D Designer</h2>
-            <input type="file" id="upload2D" accept=".svg,.dxf,.json">
-            <button id="generate3DBtn">Generate 3D Design</button>
-            <div id="threeDPreview"></div>
-        </section>
-    </main>
+        <hr>
 
+        <!-- 2D to 3D Design -->
+        <div class="design-converter">
+            <h2>2D to 3D Design</h2>
+            <input type="file" id="upload2D" accept="image/*">
+            <button id="generate3D">Generate 3D Design</button>
+            <div id="threeContainer"></div>
+        </div>
+    </div>
+
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
     <script src="script.js"></script>
 </body>
 </html>
