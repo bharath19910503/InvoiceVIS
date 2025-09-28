@@ -1,58 +1,68 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Invoice & 2D to 3D Designer</title>
-    <link rel="stylesheet" href="style.css">
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Invoice & 3D Design Generator</title>
+<link rel="stylesheet" href="style.css">
+
+<!-- Three.js for 3D preview -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/controls/OrbitControls.js"></script>
+
+<!-- jsPDF for PDF generation -->
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
+<script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
 </head>
 <body>
-    <header>
-        <h1>Varshith Interior Solution</h1>
-    </header>
 
-    <section id="invoice-section">
-        <h2>Quotation / Invoice</h2>
-        <div class="invoice-inputs">
-            <input type="text" id="clientName" placeholder="Client Name">
-            <input type="text" id="invoiceNumber" placeholder="Invoice Number">
-            <input type="date" id="invoiceDate">
-        </div>
+<header>Varshith Interior Solutions</header>
 
-        <table id="invoiceTable">
-            <thead>
-                <tr>
-                    <th>Item</th>
-                    <th>Material Used</th>
-                    <th>Rate</th>
-                    <th>Amount</th>
-                </tr>
-            </thead>
-            <tbody></tbody>
-        </table>
-        <button id="addItemBtn">Add Item</button>
+<div id="container">
+  <!-- Invoice Section -->
+  <div id="invoice">
+    <h2>Invoice</h2>
+    <table id="invoiceTable">
+      <thead>
+        <tr>
+          <th>Item</th>
+          <th>Qty</th>
+          <th>Amount</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr>
+          <td><input type="text" value="Item 1"></td>
+          <td><input type="number" value="1"></td>
+          <td><input type="number" value="100"></td>
+        </tr>
+      </tbody>
+    </table>
+    <button onclick="addRow()">Add Row</button>
+    <p>GST (%) <input type="number" id="gst" value="18"></p>
+    <p>Total: <span id="total">0</span></p>
+    <p>Final Cost: <span id="finalCost">0</span></p>
+    <button onclick="generatePDF()">Download Invoice PDF</button>
+    <input type="file" id="uploadInvoice" accept=".json" onchange="loadInvoice(event)">
+  </div>
 
-        <div id="totals">
-            <div>Total Cost: <span id="totalCost">0</span></div>
-            <div>GST: <span id="gst">0</span></div>
-            <div>Final Cost: <span id="finalCost">0</span></div>
-        </div>
+  <!-- 3D Preview Section -->
+  <div id="preview">
+    <h2>3D Preview</h2>
+    <input type="file" id="uploadImage" accept="image/*" onchange="start3DGeneration(event)">
+    <canvas id="threejs-canvas"></canvas>
+    <div id="progressBarContainer">
+      <div id="progressBar"></div>
+    </div>
+  </div>
+</div>
 
-        <button id="generateInvoiceBtn">Generate Invoice</button>
-        <button id="downloadInvoiceBtn">Download PDF</button>
-    </section>
+<footer>
+Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106<br>
+Phone: +91 9916511599 & +91 8553608981<br>
+Email: Varshithinteriorsolutions@gmail.com
+</footer>
 
-    <section id="design-section">
-        <h2>2D to 3D Designer</h2>
-        <input type="file" id="upload2D" accept=".png,.jpg,.jpeg">
-        <button id="generate3DBtn">Generate 3D Design</button>
-        <div id="3dPreview"></div>
-    </section>
-
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r152/three.min.js"></script>
-    <script src="https://cdn.jsdelivr.net/npm/three@0.152.2/examples/js/loaders/GLTFLoader.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf/2.5.1/jspdf.umd.min.js"></script>
-    <script src="https://cdnjs.cloudflare.com/ajax/libs/jspdf-autotable/3.5.28/jspdf.plugin.autotable.min.js"></script>
-    <script src="script.js"></script>
+<script src="script.js"></script>
 </body>
 </html>

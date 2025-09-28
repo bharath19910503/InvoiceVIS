@@ -1,128 +1,152 @@
-// ----------------- INVOICE LOGIC -----------------
-let invoiceTable = document.querySelector("#invoiceTable tbody");
-let totalCostSpan = document.getElementById("totalCost");
-let gstSpan = document.getElementById("gst");
-let finalCostSpan = document.getElementById("finalCost");
+/* ---------------- 3D Preview Setup ---------------- */
+let scene, camera, renderer, controls, cube;
 
-// Add new item row
-document.getElementById("addItemBtn").addEventListener("click", () => {
-    let row = invoiceTable.insertRow();
-    row.innerHTML = `
-        <td contenteditable="true">Item Name</td>
-        <td contenteditable="true">Material Name</td>
-        <td contenteditable="true">0</td>
-        <td>0</td>
-    `;
-    row.cells[2].addEventListener("input", calculateTotals); // Rate
-});
+function initThreeJS() {
+  const canvas = document.getElementById('threejs-canvas');
+  scene = new THREE.Scene();
+  camera = new THREE.PerspectiveCamera(75, canvas.clientWidth/canvas.clientHeight, 0.1, 1000);
+  renderer = new THREE.WebGLRenderer({canvas});
+  renderer.setSize(canvas.clientWidth, canvas.clientHeight);
 
-// Calculate totals (Material Used ignored)
-function calculateTotals() {
-    let total = 0;
-    invoiceTable.querySelectorAll("tr").forEach(row => {
-        let rate = parseFloat(row.cells[2].textContent) || 0;
-        let amount = rate; // Only rate determines amount
-        row.cells[3].textContent = amount.toFixed(2);
-        total += amount;
-    });
+  controls = new THREE.OrbitControls(camera, renderer.domElement);
+  camera.position.z = 5;
 
-    totalCostSpan.textContent = total.toFixed(2);
-    let gst = total * 0.18;
-    gstSpan.textContent = gst.toFixed(2);
-    finalCostSpan.textContent = (total + gst).toFixed(2);
+  const light = new THREE.DirectionalLight(0xffffff, 1);
+  light.position.set(5,5,5);
+  scene.add(light);
+
+  animate();
 }
 
-// Generate invoice
-document.getElementById("generateInvoiceBtn").addEventListener("click", () => {
-    calculateTotals();
-    alert("Invoice ready!");
-});
+function animate() {
+  requestAnimationFrame(animate);
+  renderer.render(scene, camera);
+}
 
-// Download invoice PDF with header & footer on each page
-document.getElementById("downloadInvoiceBtn").addEventListener("click", () => {
-    const { jsPDF } = window.jspdf;
-    let doc = new jsPDF();
+initThreeJS();
 
-    let clientName = document.getElementById("clientName").value || "Client";
-    let invoiceNumber = document.getElementById("invoiceNumber").value || Math.floor(10000 + Math.random() * 90000);
-    let invoiceDate = document.getElementById("invoiceDate").value || new Date().toLocaleDateString();
+/* ---------------- 3D Generation with Progress ---------------- */
+function start3DGeneration(event) {
+  const file = event.target.files[0];
+  if (!file) return;
 
-    function headerFooter(doc) {
-        // Header
-        doc.setFontSize(16);
-        doc.text("Varshith Interior Solution", 105, 14, null, null, "center");
-        // Footer
-        let pageHeight = doc.internal.pageSize.height || doc.internal.pageSize.getHeight();
-        doc.setFontSize(10);
-        doc.text("Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106", 14, pageHeight - 40);
-        doc.text("Phone: +91 9916511599 & +91 8553608981", 14, pageHeight - 32);
-        doc.text("Email: Varshithinteriorsolutions@gmail.com", 14, pageHeight - 24);
-        doc.text("Note: 50% advance, 30% after 50% work completion, 20% on project completion.", 14, pageHeight - 12);
+  const progressContainer = document.getElementById('progressBarContainer');
+  const progressBar = document.getElementById('progressBar');
+  progressContainer.style.display = 'block';
+  progressBar.style.width = '0%';
+
+  let progress = 0;
+  const interval = setInterval(() => {
+    progress += 5;
+    progressBar.style.width = progress + '%';
+    if(progress >= 100) {
+      clearInterval(interval);
+      progressContainer.style.display = 'none';
+      loadImage(file);
     }
+  }, 50);
+}
 
-    doc.setFontSize(12);
-    doc.text(`Invoice Number: ${invoiceNumber}`, 14, 28);
-    doc.text(`Client Name: ${clientName}`, 14, 36);
-    doc.text(`Date: ${invoiceDate}`, 14, 44);
+function loadImage(file) {
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const texture = new THREE.TextureLoader().load(e.target.result);
+    if(cube) scene.remove(cube);
+    const geometry = new THREE.BoxGeometry(2, 2, 2);
+    const material = new THREE.MeshBasicMaterial({ map: texture });
+    cube = new THREE.Mesh(geometry, material);
+    scene.add(cube);
+  }
+  reader.readAsDataURL(file);
+}
 
-    doc.autoTable({
-        startY: 50,
-        html: "#invoiceTable",
-        theme: "grid",
-        didDrawPage: function (data) {
-            headerFooter(doc);
-        }
+/* ---------------- Invoice Functions ---------------- */
+function addRow() {
+  const tbody = document.querySelector('#invoiceTable tbody');
+  const row = document.createElement('tr');
+  row.innerHTML = `<td><input type="text" value="Item"></td>
+                   <td><input type="number" value="1"></td>
+                   <td><input type="number" value="0"></td>`;
+  tbody.appendChild(row);
+}
+
+function calculateTotal() {
+  const rows = document.querySelectorAll('#invoiceTable tbody tr');
+  let total = 0;
+  rows.forEach(row => {
+    const amount = parseFloat(row.cells[2].children[0].value) || 0;
+    total += amount;
+  });
+  const gst = parseFloat(document.getElementById('gst').value) || 0;
+  const gstAmount = total * gst / 100;
+  const finalCost = total + gstAmount;
+
+  document.getElementById('total').textContent = total.toFixed(2);
+  document.getElementById('finalCost').textContent = finalCost.toFixed(2);
+  return { total, gstAmount, finalCost };
+}
+
+setInterval(calculateTotal, 500);
+
+function generatePDF() {
+  const { jsPDF } = window.jspdf;
+  const doc = new jsPDF();
+
+  // Header
+  doc.setFontSize(16);
+  doc.text("Varshith Interior Solutions", 105, 10, {align: 'center'});
+
+  // Table
+  const rows = [];
+  document.querySelectorAll('#invoiceTable tbody tr').forEach(row => {
+    const item = row.cells[0].children[0].value;
+    const qty = row.cells[1].children[0].value;
+    const amount = row.cells[2].children[0].value;
+    rows.push([item, qty, amount]);
+  });
+
+  doc.autoTable({
+    head: [['Item', 'Qty', 'Amount']],
+    body: rows,
+    startY: 20
+  });
+
+  const { total, gstAmount, finalCost } = calculateTotal();
+  const finalY = doc.lastAutoTable.finalY + 10;
+  doc.text(`Total Cost: ${total.toFixed(2)}`, 14, finalY);
+  doc.text(`GST: ${gstAmount.toFixed(2)}`, 14, finalY + 8);
+  doc.text(`Final Cost: ${finalCost.toFixed(2)}`, 14, finalY + 16);
+
+  // Note
+  doc.text("Note: 50% advance, 30% after 50% work completion, 20% on project completion.", 14, finalY + 26);
+
+  // Footer
+  const pageHeight = doc.internal.pageSize.height;
+  doc.text("Address: NO 39 BRN Ashish Layout Near Sri Thimmaraya Swami Gudi Anekal - 562106", 14, pageHeight - 20);
+  doc.text("Phone: +91 9916511599 & +91 8553608981", 14, pageHeight - 15);
+  doc.text("Email: Varshithinteriorsolutions@gmail.com", 14, pageHeight - 10);
+
+  doc.save("invoice.pdf");
+}
+
+/* ---------------- Load Old Invoice ---------------- */
+function loadInvoice(event) {
+  const file = event.target.files[0];
+  if (!file) return;
+
+  const reader = new FileReader();
+  reader.onload = function(e) {
+    const data = JSON.parse(e.target.result);
+    const tbody = document.querySelector('#invoiceTable tbody');
+    tbody.innerHTML = '';
+    data.items.forEach(item => {
+      const row = document.createElement('tr');
+      row.innerHTML = `<td><input type="text" value="${item.name}"></td>
+                       <td><input type="number" value="${item.qty}"></td>
+                       <td><input type="number" value="${item.amount}"></td>`;
+      tbody.appendChild(row);
     });
-
-    // Totals at end of table
-    let finalY = doc.lastAutoTable.finalY + 10;
-    doc.text(`Total Cost: ${totalCostSpan.textContent}`, 14, finalY);
-    doc.text(`GST: ${gstSpan.textContent}`, 14, finalY + 8);
-    doc.text(`Final Cost: ${finalCostSpan.textContent}`, 14, finalY + 16);
-
-    doc.save(`Invoice_${invoiceNumber}.pdf`);
-});
-
-// ----------------- 2D TO 3D DESIGN -----------------
-let scene, camera, renderer;
-
-document.getElementById("generate3DBtn").addEventListener("click", () => {
-    let fileInput = document.getElementById("upload2D");
-    if (!fileInput.files[0]) return alert("Upload a 2D Design first!");
-
-    let reader = new FileReader();
-    reader.onload = function(event) {
-        let imgData = event.target.result;
-
-        // Setup Three.js Scene
-        scene = new THREE.Scene();
-        camera = new THREE.PerspectiveCamera(75, 800/400, 0.1, 1000);
-        renderer = new THREE.WebGLRenderer({ antialias: true });
-        renderer.setSize(800, 400);
-        document.getElementById("3dPreview").innerHTML = "";
-        document.getElementById("3dPreview").appendChild(renderer.domElement);
-
-        let light = new THREE.HemisphereLight(0xffffff, 0x444444);
-        light.position.set(0, 20, 0);
-        scene.add(light);
-
-        // Apply uploaded 2D image as texture on a cube
-        let textureLoader = new THREE.TextureLoader();
-        let texture = textureLoader.load(imgData);
-        let geometry = new THREE.BoxGeometry(2, 2, 2);
-        let material = new THREE.MeshBasicMaterial({ map: texture });
-        let cube = new THREE.Mesh(geometry, material);
-        scene.add(cube);
-
-        camera.position.z = 5;
-
-        function animate() {
-            requestAnimationFrame(animate);
-            cube.rotation.x += 0.01;
-            cube.rotation.y += 0.01;
-            renderer.render(scene, camera);
-        }
-        animate();
-    }
-    reader.readAsDataURL(fileInput.files[0]);
-});
+    document.getElementById('gst').value = data.gst;
+  }
+  reader.readAsText(file);
+}
